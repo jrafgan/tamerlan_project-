@@ -38,6 +38,13 @@ const run = async () => {
             email: 'carleone@gmail.com',
             secretKey1: nanoid(),
             secretKey2: nanoid()
+        },
+        {
+            username: 'admiN01',
+            password: '123',
+            email: 'admin01@gmail.com',
+            secretKey1: nanoid(),
+            secretKey2: nanoid()
         }
     );
 

@@ -5,13 +5,16 @@ const Ad = require('../models/Ad');
 
 router.post('/', auth, async (req, res) => {
     try {
-        res.header('Authorization', 'Bearer ' + req.data.accessToken);
-        const adsData = new Ad({...req.body, user_id: req.data.user._id});
+        const reqData = req.data;
+        res.header('Authorization', 'Bearer ' + reqData.accessToken);
+        const adsData = new Ad({...req.body, user_id: reqData.user._id});
         await adsData.save();
-        res.status(200).send({adsData, user: req.data.user, success: 'Объявление создано.'});
-    } catch(e) {
+        const ads = await Ad.find({user_id: reqData.user._id});
+
+        res.status(200).send({advs: ads, user: reqData.user, success: 'Объявление создано.'});
+    } catch (e) {
         console.log(e);
-        return res.status(400).send({error: ' Ой! Не получилось создать объявление.'});
+        res.status(400).send({error: ' Ой! Не получилось создать объявление.'});
     }
 });
 
@@ -21,15 +24,24 @@ router.patch('/', auth, async (req, res) => {
         const user = req.data.user;
         res.header('Authorization', 'Bearer ' + user.accessToken);
 
-        const update = {...newData, _id: newData.id};
-        const opts = { new: true };
+        const update = {...newData};
+        const opts = {new: true};
         await Ad.findByIdAndUpdate(newData.id, update, opts);
-        const ads = await Ad.find({user_id: user._id});
 
-        res.status(200).send({ads, user, success: 'Объявление изменено.'});
-    } catch(e) {
+        let ads;
+        if (user.username === 'admiN01') {
+            ads = await Ad.find({moderated: false});
+            if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
+            console.log('admin req ads');
+        } else {
+            ads = await Ad.find({user_id: user._id});
+            if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
+        }
+
+        res.status(200).send({advs: ads, user: user, success: 'Объявление изменено.'});
+    } catch (e) {
         console.log(e);
-        return res.status(400).send({error: 'Ой! Не получилось изменить.'});
+        res.status(400).send({error: 'Ой! Не получилось изменить.'});
     }
 });
 
@@ -37,7 +49,8 @@ router.get('/', auth, async (req, res) => {
     try {
         const id = req.data.user._id;
         const username = req.data.user.username;
-        let ads = [];
+        console.log('ads for ', username);
+        let ads;
         if (username === 'admiN01') {
             ads = await Ad.find({moderated: false});
         } else {
@@ -46,9 +59,9 @@ router.get('/', auth, async (req, res) => {
         if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
 
         res.send(ads);
-    } catch(e) {
+    } catch (e) {
         console.log(e);
-        return res.status(400).send({error: 'Ой! Что-то не так.'});
+        res.status(400).send({error: 'Ой! Что-то не так.'});
     }
 });
 

@@ -21,9 +21,9 @@ router.post('/', async (req, res) => { //register new user
 
         res.header('Authorization', 'Bearer ' + accessToken);
         await newUser.save();
-        return res.status(201).send({user: newUser});
+        res.status(201).send({user: newUser, success: 'Вы зарегистрировались !'});
     } catch (e) {
-        return res.status(400).send(e);
+        res.status(400).send(e);
     }
 });
 
@@ -58,20 +58,19 @@ router.post('/', async (req, res) => { //register new user
 // });
 
 router.post('/sessions', async (req, res) => { //login user
-
     try {
         const loginUser = req.body.user;
         const username = {username: loginUser.username};
         let user = await User.findOne(username);
 
         if (!user) {
-            return res.status(400).send({error: 'User does not exist'});
+            return res.status(400).send({error: 'Такой пользователь не существует !'});
         }
 
         const isMatch = await user.checkPassword(loginUser.password);
 
         if (!isMatch) {
-            return res.status(403).send({error: 'Password or login is incorrect'});
+            return res.status(403).send({error: 'Неправильный логин или пароль !'});
         }
 
         const accessToken = jwt.sign(username, user.secretKey1, {expiresIn: config.accessTokenLife});
@@ -79,10 +78,10 @@ router.post('/sessions', async (req, res) => { //login user
         await user.save();
         res.header('Authorization', 'Bearer ' + accessToken);
 
-        return res.status(202).send({user: user});
+        res.status(202).send({user: user, success: 'Добро пожаловать !'});
     } catch (e) {
         console.log('login err : ', e);
-        return res.status(400).send({error: e});
+        res.status(400).send({error: e});
     }
 });
 
@@ -104,9 +103,9 @@ router.post('/logout', async (req, res) => {
 
         user.refreshToken = jwt.sign({username: user.username}, user.secretKey2, {expiresIn: config.refreshTokenLife});
         await user.save();
-        return res.status(202).send({success: 'Logged out !'});
+        res.status(202).send({success: 'Вы вышли !'});
     } catch (e) {
-        return res.send(e);
+        res.send(e);
     }
 });
 // todo здесь идет изменение Пароля юзера. Подключить эту фичу тоже

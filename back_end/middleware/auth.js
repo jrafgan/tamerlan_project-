@@ -15,6 +15,7 @@ const reNewTokens = (aToken, user) => {
 
 const auth = async (req, res, next) => {
     try {
+        console.log('auth triggered : ');
         let accessToken = req.get('Authorization'); // получает АТ
 
         if (!accessToken) {
@@ -34,22 +35,22 @@ const auth = async (req, res, next) => {
 
             if (decoded) {
                 req.data = reNewTokens(accessToken, user);
-                return;
+                next();
             }
 
-            if (err && err.toString() === 'TokenExpiredError: jwt expired') {
-
-                console.log('error : ', err);
-                return req.data = reNewTokens(accessToken, user);
-            } else {
-                console.log('A token not valid ; ', err);
-                return res.status(401).send({error: 'Logout'});
+            if (err) {
+                if (err.toString() === 'TokenExpiredError: jwt expired') {
+                    console.log('error : ', err);
+                    req.data = reNewTokens(accessToken, user);
+                    next();
+                } else {
+                    console.log({error: 'Logout'}, err);
+                    res.status(401).send({error: 'Logout'});
+                }
             }
         });
-
-        next();
     } catch (e) {
-        return res.send(e);
+        console.log(e);
     }
 };
 
