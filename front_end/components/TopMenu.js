@@ -10,10 +10,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {loadFromAsyncStorage} from "../store/asyncStorage";
 import {loginUserSuccess, logoutUser, setAuthorization} from "../store/actions/usersActions";
 import BackOffice from "../screens/BackOffice";
-import {getNewAds, getUserAllAds} from "../store/actions/adsActions";
+import {getUserAllAds} from "../store/actions/adsActions";
 
 const Menu = () => {
-    const navigation = useNavigation();
     const onPressLogin = () => {
         //navigation.navigate('BackOffice')
     }
@@ -52,8 +51,9 @@ const Home = () => {
             dispatch(getUserAllAds(r.id));
             dispatch(setAuthorization(true));
             dispatch(loginUserSuccess(r.username));
+
         }).catch(e => console.log('UE err TopMenu 61: ', e));
-    }, [userState.user])
+    }, [])
 
     return (!userState.authorized ? <View style={styles.backofficeView}><TouchableOpacity onPress={onPressLogin}>
         <Text style={styles.backofficeText}>Войти</Text>
@@ -69,6 +69,7 @@ const Home = () => {
 }
 
 const TopMenu = () => {
+
     return (
         <View style={styles.topMenu}>
             <Header style={styles.topMenu}
@@ -94,7 +95,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
         color: '#fff'
     }
-
 });
 
 export default TopMenu;

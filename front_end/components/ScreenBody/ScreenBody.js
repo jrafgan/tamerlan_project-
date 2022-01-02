@@ -11,13 +11,13 @@ import {loginUserSuccess, setAuthorization} from "../../store/actions/usersActio
 
 const ScreenBody = () => {
 
-    // const ads = useSelector(state => state.ads.allAds);
+    const ads = useSelector(state => state.ads.allAds);
     const dispatch = useDispatch();
 
-    //  useEffect(() => {
-    //     if (ads) changeMarginBottom(0);
-    //  });
-    // const [marginBottom, changeMarginBottom] = useState(133);
+     useEffect(() => {
+        if (ads) changeMarginBottom(0);
+     });
+    const [marginBottom, changeMarginBottom] = useState(133);
 
     const saveCity = value => {
         dispatch(setCityToStore(value));
@@ -30,7 +30,7 @@ const ScreenBody = () => {
                 marginHorizontal: 12,
                 marginBottom: 0
             }}>
-                <CityPicker saveHandler={saveCity}/>
+                <CityPicker saveHandler={saveCity} />
                 <CategoryPicker/>
                 <SearchResult/>
             </View>

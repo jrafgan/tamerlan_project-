@@ -9,18 +9,18 @@ import {useSelector} from "react-redux";
 import AdminAdDetails from "./AdminTabs/AdminAdDetails";
 import NewAds from "./AdminTabs/NewAds";
 import PaidAds from "./AdminTabs/PaidAds";
+import {getUserAllAds} from "../../store/actions/adsActions";
 
 const width = Dimensions.get('window').width;
 
 const BackOfficeTabs = () => {
-
+    const adsState = useSelector(state => state.ads);
     const userState = useSelector(state => state.users);
     const [tab, setTab] = useState(0);
     const [admin, setAdmin] = useState(false);
     const [title1, setTitle1] = useState(' Мои объявления');
     const [title2, setTitle2] = useState(" Создать объявление");
     const [title3, setTitle3] = useState(" Сообщения");
-
 
     useEffect(() => {
         if (userState.user === "admiN01") {
@@ -31,11 +31,16 @@ const BackOfficeTabs = () => {
         }
     }, [])
 
+    const getAds = (num) => {
+        // getUserAllAds()
+        setTab(num);
+    }
+
     return (
         <>
             <View>
                 <View style={styles.button}><Button
-                    onPress={() => setTab(0)}
+                    onPress={() => getAds(0)}
                     icon={
                         <Icon
                             name="briefcase"

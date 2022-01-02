@@ -42,7 +42,7 @@ const CreateMessageForm = () => {
                 style={styles.textInput}
                 multiline
                 onChangeText={setImageUrlsString}
-                placeholder="Ссылка на ваше изображение, каждую ссылку раздаеляйте запятой"
+                placeholder="Ссылка на ваш  скриншот, каждую ссылку раздаеляйте запятой"
             />
             <Button
                 title={"Отправить"}

@@ -1,5 +1,5 @@
 import axios from '../../axios-api';
-import {notificationTimer} from "./usersActions";
+import {LOGOUT_USER, logoutUser, notificationTimer} from "./usersActions";
 
 export const SHOW_PRELOADER = 'SHOW_PRELOADER';
 export const SET_CAT_ID_TO_STORE = 'SET_CAT_ID_TO_STORE';
@@ -12,7 +12,8 @@ export const SET_TEST_HTML = 'SET_TEST_HTML';
 export const KEYWORD_IS_NULL_WARNING = 'KEYWORD_IS_NULL_WARNING';
 export const SET_ALL_ADS_TO_STORE = 'SET_ALL_ADS_TO_STORE';
 export const FETCH_GEOLOCATION_SUCCESS = 'FETCH_GEOLOCATION_SUCCESS';
-export const FETCH_FAILURE = 'FETCH_FAILURE';
+export const SET_SUCCESS_MSG = 'SET_SUCCESS_MSG';
+export const SET_ERROR_MSG = 'SET_ERROR_MSG';
 
 export const preloaderHandler = showPreloader => ({type: SHOW_PRELOADER, showPreloader});
 export const setCatIdToStore = catId => ({type: SET_CAT_ID_TO_STORE, catId});
@@ -20,13 +21,20 @@ export const setCityToStore = city => ({type: SET_CITY_TO_STORE, city});
 export const setAdToModify = ad => ({type: SET_MODIFY_AD, ad});
 export const setAllAds = ads => ({type: SET_ALL_ADS_TO_STORE, ads});
 export const fetchGeoLocationSuccess = location => ({type: FETCH_GEOLOCATION_SUCCESS, location});
-export const fetchFailure = error => ({type: FETCH_FAILURE, error});
+export const setErrorMessage = error => ({type: SET_ERROR_MSG, error});
+export const setSuccessMessage = success => ({type: SET_SUCCESS_MSG, success});
 
 const errorHandler = (err, dispatch) => {
-    if (err.response) {
-        dispatch(fetchFailure(err.response.data));
+    console.log('errHandler : ', err.response.data.error);
+    if (err) {
+        if (err.response.data.error === 'Logout') {
+            dispatch(notificationTimer(setErrorMessage({error: 'Войдите заново.'}), setErrorMessage(null)));
+            logoutUser();
+        } else {
+            dispatch(notificationTimer(setErrorMessage(err.response.data), setErrorMessage(null)));
+        }
     } else {
-        dispatch(fetchFailure('No network connection '))
+        dispatch(notificationTimer(setErrorMessage('No network connection '), setErrorMessage(null)));
     }
 }
 
@@ -37,7 +45,7 @@ export const getNewAds = () => {
                 dispatch(setAllAds(res.data));
             },
             err => {
-                errorHandler(err, dispatch)
+                errorHandler(err, dispatch);
             });
     };
 };
@@ -63,14 +71,12 @@ export const getCityNameByGeocode = (url) => {
 export const createAd = adData => {
     return dispatch => {
         return axios.post('/ads/', adData).then(res => {
-                dispatch(notificationTimer(setSuccessMsg(res.data.message), setSuccessMsg(null)));
+                console.log('creatAd req, all ads : ', res.data);
+                dispatch(setAllAds(res.data.advs));
+                dispatch(notificationTimer(setSuccessMessage(res.data.success), setSuccessMessage(null)));
             },
             err => {
-                if (err.response) {
-                    dispatch(notificationTimer(fetchFailure(err.response.data.error.error), fetchFailure(null)));
-                } else {
-                    dispatch(notificationTimer(fetchFailure('No network connection'), fetchFailure(null)));
-                }
+                errorHandler(err, dispatch)
             });
     };
 };
@@ -78,40 +84,25 @@ export const createAd = adData => {
 export const editAd = adData => {
     return dispatch => {
         return axios.patch('/ads/', adData).then(res => {
-                const data = res.data;
-                dispatch(setAllAds(data.ads));
-                dispatch(notificationTimer(setSuccessMsg(data.message), setSuccessMsg(null)));
-                console.log('res patch : ', Object.keys(data));
+                console.log('edited req, all ads : ', res.data);
+                dispatch(setAllAds(res.data.advs));
+                dispatch(notificationTimer(setSuccessMessage(res.data.success), setSuccessMessage(null)));
             },
             err => {
-                if (err.response) {
-                    dispatch(notificationTimer(fetchFailure(err.response.data.error.error), fetchFailure(null)));
-                } else {
-                    dispatch(notificationTimer(fetchFailure('No network connection'), fetchFailure(null)));
-                }
+                errorHandler(err, dispatch)
             });
     };
 };
 
 export const getUserAllAds = () => {
     return dispatch => {
-        dispatch(preloaderHandler(true));
+        // dispatch(preloaderHandler(true));
         return axios.get('/ads').then(res => {
+                console.log('all ads : ', res.data);
                 dispatch(setAllAds(res.data));
             },
             err => {
-                console.log('login err : ', err);
-                if (err.response) {
-                    dispatch(notificationTimer(fetchFailure(err.response.data.error), fetchFailure(null)));
-                } else {
-                    dispatch(notificationTimer(fetchFailure('No network connection'), fetchFailure(null)));
-                }
+                errorHandler(err, dispatch)
             });
     };
 };
-
-export class setErrorMsg {
-}
-
-export class setSuccessMsg {
-}

@@ -5,12 +5,13 @@ import {
     SET_YOULA_URL2_TO_STORE,
     SET_AVITO_URL2_TO_STORE,
     SHOW_PRELOADER,
-    FETCH_FAILURE,
     KEYWORD_IS_NULL_WARNING,
     SET_TEST_HTML,
     FETCH_GEOLOCATION_SUCCESS,
     SET_ALL_ADS_TO_STORE,
-    SET_MODIFY_AD
+    SET_MODIFY_AD,
+    SET_SUCCESS_MSG,
+    SET_ERROR_MSG
 } from '../actions/adsActions';
 
 const initialState = {
@@ -26,7 +27,8 @@ const initialState = {
     warning: false,
     location: '',
     testHTML: null,
-    error: null,
+    error: '',
+    success: '',
     modifyingAd: null,
 };
 
@@ -42,7 +44,6 @@ const adsReducer = (state = initialState, action) => {
             return {...state, city: action.city};
 
         case SET_MODIFY_AD:
-            console.log('reducer modify ad : ', action.ad)
             return {...state, modifyingAd: action.ad};
 
         case SET_KEY_WORD_TO_STORE:
@@ -66,8 +67,13 @@ const adsReducer = (state = initialState, action) => {
         case FETCH_GEOLOCATION_SUCCESS:
             return {...state, location: action.location};
 
-        case FETCH_FAILURE:
-            return {...state, error: action.error, showPreloader: false};
+        case SET_SUCCESS_MSG:
+            console.log('ads reducer succes : ', action.success)
+            return {...state, success: action.success};
+
+        case SET_ERROR_MSG:
+            console.log('ads reducer error : ', action.error)
+            return {...state, error: action.error};
 
         default:
             return state;

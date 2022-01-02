@@ -35,7 +35,6 @@ const usersReducer = (state = initialState, action) => {
             return {...state, authorized: action.authorized};
 
         case LOGIN_USER_SUCCESS:
-            console.log('user set to store : ', action.username)
             return {...state, user: action.username, authorized: true};
 
         case LOGIN_USER_FAILURE:
@@ -43,12 +42,13 @@ const usersReducer = (state = initialState, action) => {
 
         case LOGOUT_USER:
             return {...state, user: null, authorized: false};
+
         case SET_SUCCESS_MESSAGE:
-            console.log('success : ', action.success);
+            console.log('user reducer success : ', action.success)
             return {...state, successMsg: action.success};
 
         case SET_ERROR_MESSAGE:
-            console.log('error : ', action.error);
+            console.log('user reducer error : ', action.error)
             return {...state, errorMsg: action.error};
 
         case GET_HISTORY_SUCCESS:

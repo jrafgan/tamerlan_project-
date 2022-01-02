@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, TextInput, View} from "react-native";
 import {Picker} from "@react-native-picker/picker";
 import {adSubCategory, avitoCatArr, fullDescriptionLines, shortDescriptionLines} from "../../../constants";
 import CityPicker from "../../ScreenBody/CityPicker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {Button} from "react-native-elements";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {createAd} from "../../../store/actions/adsActions";
 
 const UserCreateAd = () => {
-    const [selectedCategory, setSelectedCategory] = useState('Недвижимость');
-    const [selectedSubCategory, setSelectedSubCategory] = useState('Продаю');
-    const [city, setCity] = useState('Москва');
+    const [selectedCategory, setSelectedCategory] = useState('id2');
+    const [selectedSubCategory, setSelectedSubCategory] = useState('sell');
+    const [city, setCity] = useState('angarsk');
     const [adTitle, setAdTitle] = useState('Продам 1-к квартитру');
     const [shortDescription, setShortDescription] = useState('Квартира в центре Москвы');
     const [fullDescription, setFullDescription] = useState('этаж 3, грузовой лифт, площадь 85 м2, газ.');
@@ -23,7 +23,6 @@ const UserCreateAd = () => {
     const [borderWidth, setBorderWidth] = useState(1);
 
     const dispatch = useDispatch();
-    // const adToModify = useSelector(state => state.ads.modifyingAd)
 
     const saveCity = value => {
         setCity(value);

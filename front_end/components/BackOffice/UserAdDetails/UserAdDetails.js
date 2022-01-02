@@ -1,7 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, TextInput, View, ScrollView} from 'react-native';
 import {useDispatch, useSelector} from "react-redux";
-import {useNavigation} from "@react-navigation/native";
 import {Button, Card} from "react-native-elements";
 import moment from "moment";
 import {editAd} from "../../../store/actions/adsActions";
@@ -9,7 +8,7 @@ import CityPicker from "../../ScreenBody/CityPicker";
 import {fullDescriptionLines, shortDescriptionLines} from "../../../constants";
 
 const UserAdDetails = () => {
-    useNavigation();
+
     const ad = useSelector(state => state.ads.modifyingAd);
     const dispatch = useDispatch();
 
@@ -22,6 +21,10 @@ const UserAdDetails = () => {
     const [phone, setPhone] = useState(ad.phone);
     const [color, setColor] = useState('black');
     const [borderWidth, setBorderWidth] = useState(1);
+
+    useEffect(() => {
+
+    }, [])
 
     const setNewImg = (url, ndx) => {
         const copy = imageUrls;
@@ -145,12 +148,6 @@ const UserAdDetails = () => {
                             style={styles.textInput}
                             onChangeText={phoneValidation}
                             value={phone}
-                        />
-                        <Text style={styles.text}>Город</Text>
-                        <TextInput
-                            style={styles.textInput}
-                            onChangeText={setCity}
-                            value={city}
                         />
                         <Button
                             title="Сохранить"

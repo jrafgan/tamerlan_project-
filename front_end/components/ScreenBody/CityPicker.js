@@ -1,17 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, TextInput, Text, TouchableOpacity} from 'react-native';
 import {citiesArr} from '../../constants';
-import { Dimensions } from "react-native";
-import {useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {setCityToStore} from "../../store/actions/adsActions";
-
-const width = Dimensions.get('window').width;
 
 const CityPicker = ({saveHandler, city}) => {
 
-    const [text, setText] = useState(city);
+    const [text, setText] = useState('');
     const [filteredCities, setFilteredCities] = useState([]);
-    const clientLocation = useSelector(state => state.ads.location)
+    // const clientLocation = useSelector(state => state.ads.location);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (city) {
+            // const cityT = citiesArr.filter(el => el.value === city)
+            setText(city);
+        }
+    }, [city])
 
     const findSuggestion = (query) => {
         if (query) {
@@ -32,14 +37,13 @@ const CityPicker = ({saveHandler, city}) => {
 
     return (
         <View style={styles.containerCategory}>
-            <Text>{clientLocation}</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={query => {
                     findSuggestion(query);
                     return setText(query);
                 }}
-                //placeholder='Выберите город...'
+                placeholder={text || 'Выберите город...'}
                 value={text}
             />
             <View style={styles.suggestList}>
@@ -62,7 +66,6 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: 1,
         paddingHorizontal: 10,
-        width: width,
         fontSize: 16,
         marginBottom: 15
     },

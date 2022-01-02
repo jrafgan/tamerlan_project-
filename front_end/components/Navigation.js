@@ -15,14 +15,15 @@ import AdminAdDetails from "./BackOffice/AdminTabs/AdminAdDetails";
 const Stack = createStackNavigator();
 
 const Navigation = () => {
-    const userAuthorized = useSelector(state => state.users.authorized);
+    const userState = useSelector(state => state.users);
+    const adsState = useSelector(state => state.ads);
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName={'Home'} screenOptions={{
                 headerShown: false
             }}>
                 <Stack.Screen name="Home" component={HomeScreen}/>
-                {userAuthorized ? <><Stack.Screen name="BackOffice" component={BackOffice}/>
+                {userState.authorized ? <><Stack.Screen name="BackOffice" component={BackOffice}/>
                 <Stack.Screen name="UserCreateAd" component={UserCreateAd}/>
                     <Stack.Screen name="UserAdDetails" component={UserAdDetails}/>
                     <Stack.Screen name="AdminAdDetails" component={AdminAdDetails}/>
@@ -31,8 +32,20 @@ const Navigation = () => {
                     <Stack.Screen name="Register" component={Register}/>
                 </>}
             </Stack.Navigator>
+            {userState.successMsg || adsState.success || userState.errorMsg || adsState.error ? <View style={styles.badgeContainer}>
+                <Notification message={userState.successMsg || adsState.success || userState.errorMsg || adsState.error} color={userState.successMsg || adsState.success ? '#00b300' : 'red'}/>
+            </View> : null}
         </NavigationContainer>
     );
 };
+
+const styles = StyleSheet.create({
+    badgeContainer: {
+        position: 'absolute',
+        top: 100,
+        left: 20,
+        zIndex: 20
+    }
+});
 
 export default Navigation;

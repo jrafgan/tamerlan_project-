@@ -13,12 +13,19 @@ const AdminAdDetails = () => {
     const dispatch = useDispatch();
 
     const [city, setCity] = useState('');
-    const [approve, setApprove] = useState(selectedAd.moderated);
+    const [approve, setApprove] = useState('');
 
     useEffect(() => {
         if (selectedAd) {
-            console.log('selected : ', selectedAd);
-            const cityObj = citiesArr.find(el => el.value === selectedAd.city);
+            citiesArr.find(el => {
+                if (el.value === selectedAd.city) {
+                    setCity(el.title);
+                }
+                return el.value === selectedAd.city;
+            });
+        }
+        if (selectedAd.moderated) {
+            setCity(selectedAd.moderated)
         }
     }, []);
 
@@ -31,8 +38,8 @@ const AdminAdDetails = () => {
     }
 
     const changeSubmit = () => {
-        console.log('selected ad ; ', selectedAd);
         const data = {
+            id: selectedAd._id,
             moderated: approve,
         }
         dispatch(editAd(data));
@@ -55,6 +62,7 @@ const AdminAdDetails = () => {
                         </View>) : null}
                         <View style={styles.text}>
                             <Button
+                                raised
                                 title={approve ? 'Проверено' : 'На модерации'}
                                 type="outline"
                                 onPress={changeStatus}
@@ -66,13 +74,21 @@ const AdminAdDetails = () => {
                         <Text style={styles.text}>{localeTime(selectedAd.date)}</Text>
                         <Text style={styles.text}>{selectedAd.selectedCategory}</Text>
                         <Text style={styles.text}>{selectedAd.selectedSubCategory}</Text>
-                        <Text style={styles.text}>г. {selectedAd.city}</Text>
+                        <Text style={styles.text}>г. {city}</Text>
                         <Text style={styles.text}>{selectedAd.shortDescription}</Text>
                         <Text style={styles.text}>{selectedAd.fullDescription}</Text>
                         <Text style={styles.text}>{selectedAd.price}</Text>
                         <Text style={styles.text}>{selectedAd.phone}</Text>
                         <Button
+                            containerStyle={styles.btn}
+                            raised
                             title="Сохранить"
+                            type="outline"
+                            onPress={changeSubmit}
+                        />
+                        <Button
+                            raised
+                            title="Написать сообщение..."
                             type="outline"
                             onPress={changeSubmit}
                         />
@@ -91,6 +107,9 @@ const styles = StyleSheet.create({
     text: {
         marginTop: 10,
         marginBottom: 10
+    },
+    btn: {
+        marginVertical: 20,
     },
     headerText: {
         fontSize: 18,

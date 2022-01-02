@@ -1,20 +1,16 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {StyleSheet, View, ScrollView, Dimensions} from 'react-native';
 import TopMenu from '../components/TopMenu';
 import Footer from '../components/Footer';
 import {StatusBar} from 'expo-status-bar';
 import ScreenBody from '../components/ScreenBody/ScreenBody';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import Preloader from "../components/Preloader";
 import AppAdsBlock from "../components/AppAdsBlock";
-import {getNewAds, getUserAllAds} from "../store/actions/adsActions";
-import {loadFromAsyncStorage} from "../store/asyncStorage";
-import {loginUserSuccess, setAuthorization} from "../store/actions/usersActions";
 
 const height = Dimensions.get('window').height;
 
 const HomeScreen = () => {
-
     const show = useSelector(state => state.ads.showPreloader);
 
     return (

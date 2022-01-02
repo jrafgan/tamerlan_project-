@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, Pressable, ScrollView} from "react-native";
 import {Header} from "react-native-elements";
 import {useNavigation} from "@react-navigation/native";
 import {useDispatch, useSelector} from "react-redux";
 import {logoutUser} from "../store/actions/usersActions";
 import BackOfficeTabs from "../components/BackOffice/BackOfficeTabs";
-import Notification from "../components/Notification";
 
 const BackOffice = () => {
     const state = useSelector(state => state.users);
@@ -45,12 +44,6 @@ const BackOffice = () => {
                 centerComponent={<WebSiteName/>}
                 rightComponent={<Home/>}
             />
-            {state.successMsg ? <View style={styles.badgeContainer}>
-                <Notification message={state.successMsg} color='#00b300'/>
-            </View> : null}
-            {state.errorMsg ? <View style={styles.badgeContainer}>
-                <Notification message={state.errorMsg} color='red'/>
-            </View> : null}
             <ScrollView>
 
                 <Text style={styles.header}>Это твой личный кабинет. Здесь можно создавать свои объявления. This is
@@ -71,12 +64,6 @@ const styles = StyleSheet.create({
     },
     topMenu: {
         color: '#fff'
-    },
-    badgeContainer: {
-        position: 'absolute',
-        top: 100,
-        left: 20,
-        zIndex: 20
     }
 });
 

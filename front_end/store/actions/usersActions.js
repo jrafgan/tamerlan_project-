@@ -15,7 +15,6 @@ export const SET_SUCCESS_MESSAGE = 'SET_SUCCESS_MESSAGE';
 export const SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE';
 
 const registerUserSuccess = user => ({type: REGISTER_USER_SUCCESS, user});
-export const registerUserFailure = error => ({type: REGISTER_USER_FAILURE, error});
 export const loginUserSuccess = username => ({type: LOGIN_USER_SUCCESS, username});
 const loginUserFailure = error => ({type: LOGIN_USER_FAILURE, error});
 export const setAuthorization = authorized => ({type: SET_AUTHORIZATION, authorized});
@@ -31,13 +30,21 @@ axios.interceptors.request.use(async req => {
     }).catch(e => console.log(e));
     return req;
 }, err => Promise.reject(err));
+
 axios.interceptors.response.use(async res => {
     const token = res.headers.authorization;
     const resData = res.data;
-    console.log('res data : ', Object.keys(resData));
-    if (resData.success) setSuccessMsg(resData.success);
-    if (resData.error) setErrorMsg(resData.error);
-    if (token) {
+
+    // if (resData.success) {
+    //     console.log('res success : ', resData.success);
+    // }
+    if (resData.error) {
+        console.log('res error : ', resData.error);
+        if (resData.error.error === 'Logout') {
+            console.log('logout suppose to triggered : ')
+        }
+    }
+    if (resData.user) {
         const data = {
             username: resData.user.username,
             token,
@@ -47,9 +54,7 @@ axios.interceptors.response.use(async res => {
         await saveToAsyncStorage(data).then().catch(e => console.log(e))
     }
     return res;
-}, err => {
-    return err;
-});
+}, err => Promise.reject(err));
 
 export const notificationTimer = (func1, func2) => {
     return dispatch => {
@@ -63,18 +68,23 @@ export const notificationTimer = (func1, func2) => {
     }
 }
 
+const errorHandler = (err, dispatch) => {
+    if (err) {
+        dispatch(notificationTimer(setErrorMsg(err.response.data.error), setErrorMsg(null)));
+    } else {
+        dispatch(notificationTimer(setErrorMsg('No network connection'), setErrorMsg(null)));
+    }
+}
+
 export const logoutUser = () => {
     return dispatch => {
-        return axios.post('/users/logout').then(() => {
+        return axios.post('/users/logout').then(res => {
                 dispatch({type: LOGOUT_USER});
-                clearAsyncStorage().then().catch(e => console.log('user actions 66 : ', e));
+                clearAsyncStorage().then().catch(e => console.log('user actions 82 : ', e));
+                dispatch(notificationTimer(setSuccessMsg('Вы вышли !'), setSuccessMsg(null)));
             },
-            error => {
-                if (error.response) {
-                    dispatch(notificationTimer(registerUserFailure(error.response.data), registerUserFailure(null)));
-                } else {
-                    dispatch(notificationTimer(registerUserFailure('No network connection'), registerUserFailure(null)));
-                }
+            err => {
+                errorHandler(err, dispatch);
             }
         )
     }
@@ -85,13 +95,10 @@ export const registerUser = userData => {
         return axios.post('/users', userData).then(res => {
                 dispatch(registerUserSuccess(res.data.user.username));
                 dispatch(setAuthorization(true));
+                dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
             },
             err => {
-                if (err.response) {
-                    dispatch(notificationTimer(registerUserFailure('username или email уже используется'), registerUserFailure(null)));
-                } else {
-                    dispatch(notificationTimer(registerUserFailure('No network connection'), registerUserFailure(null)));
-                }
+                errorHandler(err, dispatch);
             }
         )
     }
@@ -102,13 +109,10 @@ export const loginUser = userData => {
         return axios.post('/users/sessions', userData).then(res => {
                 dispatch(loginUserSuccess(res.data.user.username));
                 dispatch(setAuthorization(true));
+                dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
             },
             err => {
-                if (err.response) {
-                    dispatch(notificationTimer(loginUserFailure(err.response.data.error), loginUserFailure(null)));
-                } else {
-                    dispatch(notificationTimer(loginUserFailure('No network connection'), loginUserFailure(null)));
-                }
+                errorHandler(err, dispatch);
             })
     }
 };
