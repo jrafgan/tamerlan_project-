@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import CityPicker from "./CityPicker";
 import {getNewAds, getUserAllAds, setCityToStore} from "../../store/actions/adsActions";
 import {loadFromAsyncStorage} from "../../store/asyncStorage";
-import {loginUserSuccess, setAuthorization} from "../../store/actions/usersActions";
+import {userSuccessHandler, setAuthorization} from "../../store/actions/usersActions";
 
 const ScreenBody = () => {
 

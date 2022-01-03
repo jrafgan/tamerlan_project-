@@ -1,22 +1,14 @@
 import axios from '../../axios-api';
 import {clearAsyncStorage, loadFromAsyncStorage, saveToAsyncStorage} from "../asyncStorage";
 
-export const REGISTER_USER_SUCCESS = 'REGISTER_USER _SUCCESS';
-export const REGISTER_USER_FAILURE = 'REGISTER_USER _FAILURE';
-export const SET_AUTHORIZATION = 'SET_AUTHORIZATION';
-
-export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
-export const LOGIN_USER_FAILURE = 'LOGIN_USER_FAILURE';
-
+export const SET_AUTHORIZATION = 'SET_AUTHORIZATION'; //todo delete type
+export const USER_SUCCESS_HANDLER = 'USER_SUCCESS_HANDLER';
 export const LOGOUT_USER = 'LOGOUT_USER';
 
-export const GET_HISTORY_SUCCESS = 'GET_HISTORY_SUCCESS';
 export const SET_SUCCESS_MESSAGE = 'SET_SUCCESS_MESSAGE';
 export const SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE';
 
-const registerUserSuccess = user => ({type: REGISTER_USER_SUCCESS, user});
-export const loginUserSuccess = username => ({type: LOGIN_USER_SUCCESS, username});
-const loginUserFailure = error => ({type: LOGIN_USER_FAILURE, error});
+export const userSuccessHandler = data => ({type: USER_SUCCESS_HANDLER, data});
 export const setAuthorization = authorized => ({type: SET_AUTHORIZATION, authorized});
 export const setSuccessMsg = success => ({type: SET_SUCCESS_MESSAGE, success});
 export const setErrorMsg = error => ({type: SET_ERROR_MESSAGE, error});
@@ -38,19 +30,19 @@ axios.interceptors.response.use(async res => {
     // if (resData.success) {
     //     console.log('res success : ', resData.success);
     // }
-    if (resData.error) {
-        console.log('res error : ', resData.error);
-        if (resData.error.error === 'Logout') {
-            console.log('logout suppose to triggered : ')
-        }
-    }
+    // if (resData.error) {
+    //     console.log('res error : ', resData.error);
+    //     if (resData.error.error === 'Logout') {
+    //         console.log('logout suppose to triggered : ')
+    //     }
+    // }
     if (resData.user) {
         const data = {
             username: resData.user.username,
             token,
             id: resData.user._id
         };
-        loginUserSuccess(resData.user.username);
+        userSuccessHandler(resData.user);
         await saveToAsyncStorage(data).then().catch(e => console.log(e))
     }
     return res;
@@ -70,7 +62,7 @@ export const notificationTimer = (func1, func2) => {
 
 const errorHandler = (err, dispatch) => {
     if (err) {
-        dispatch(notificationTimer(setErrorMsg(err.response.data.error), setErrorMsg(null)));
+        dispatch(notificationTimer(setErrorMsg(err.response.data.error.error), setErrorMsg(null)));
     } else {
         dispatch(notificationTimer(setErrorMsg('No network connection'), setErrorMsg(null)));
     }
@@ -93,8 +85,7 @@ export const logoutUser = () => {
 export const registerUser = userData => {
     return dispatch => {
         return axios.post('/users', userData).then(res => {
-                dispatch(registerUserSuccess(res.data.user.username));
-                dispatch(setAuthorization(true));
+                dispatch(userSuccessHandler(res.data.user));
                 dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
             },
             err => {
@@ -107,8 +98,7 @@ export const registerUser = userData => {
 export const loginUser = userData => {
     return async dispatch => {
         return axios.post('/users/sessions', userData).then(res => {
-                dispatch(loginUserSuccess(res.data.user.username));
-                dispatch(setAuthorization(true));
+                dispatch(userSuccessHandler(res.data.user));
                 dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
             },
             err => {

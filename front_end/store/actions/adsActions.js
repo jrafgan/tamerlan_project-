@@ -28,8 +28,8 @@ const errorHandler = (err, dispatch) => {
     console.log('errHandler : ', err.response.data.error);
     if (err) {
         if (err.response.data.error === 'Logout') {
-            dispatch(notificationTimer(setErrorMessage({error: 'Войдите заново.'}), setErrorMessage(null)));
-            logoutUser();
+            dispatch(notificationTimer(setErrorMessage('Войдите заново.'), setErrorMessage(null)));
+            dispatch(logoutUser());
         } else {
             dispatch(notificationTimer(setErrorMessage(err.response.data), setErrorMessage(null)));
         }

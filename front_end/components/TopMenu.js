@@ -8,7 +8,7 @@ import Login from "../screens/Login";
 import Register from "../screens/Register";
 import {useDispatch, useSelector} from "react-redux";
 import {loadFromAsyncStorage} from "../store/asyncStorage";
-import {loginUserSuccess, logoutUser, setAuthorization} from "../store/actions/usersActions";
+import {userSuccessHandler, logoutUser} from "../store/actions/usersActions";
 import BackOffice from "../screens/BackOffice";
 import {getUserAllAds} from "../store/actions/adsActions";
 
@@ -49,8 +49,7 @@ const Home = () => {
         loadFromAsyncStorage().then(r => {
             if (!r) return;
             dispatch(getUserAllAds(r.id));
-            dispatch(setAuthorization(true));
-            dispatch(loginUserSuccess(r.username));
+            dispatch(userSuccessHandler(r));
 
         }).catch(e => console.log('UE err TopMenu 61: ', e));
     }, [])
