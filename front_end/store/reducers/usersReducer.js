@@ -19,7 +19,7 @@ const usersReducer = (state = initialState, action) => {
     switch (action.type) {
 
         case USER_SUCCESS_HANDLER:
-            return {...state, user: action.data.username, userId: action.data[id || _id] , authorized: true};
+            return {...state, user: action.data.username, userId: action.data.id || action.data._id , authorized: true};
 
         case LOGOUT_USER:
             return {...state, user: '', userId: '', authorized: false};

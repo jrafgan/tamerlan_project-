@@ -8,8 +8,10 @@ export const SET_KEY_WORD_TO_STORE = 'SET_KEY_WORD_TO_STORE';
 export const SET_YOULA_URL2_TO_STORE = 'SET_YOULA_URL2_TO_STORE';
 export const SET_AVITO_URL2_TO_STORE = 'SET_AVITO_URL2_TO_STORE';
 export const SET_MODIFY_AD = 'SET_MODIFY_AD';
+
 export const SET_TEST_HTML = 'SET_TEST_HTML';
 export const KEYWORD_IS_NULL_WARNING = 'KEYWORD_IS_NULL_WARNING';
+
 export const SET_ALL_ADS_TO_STORE = 'SET_ALL_ADS_TO_STORE';
 export const FETCH_GEOLOCATION_SUCCESS = 'FETCH_GEOLOCATION_SUCCESS';
 export const SET_SUCCESS_MSG = 'SET_SUCCESS_MSG';
@@ -96,7 +98,7 @@ export const editAd = adData => {
 
 export const getUserAllAds = () => {
     return dispatch => {
-        // dispatch(preloaderHandler(true));
+        dispatch(preloaderHandler(true));
         return axios.get('/ads').then(res => {
                 console.log('all ads : ', res.data);
                 dispatch(setAllAds(res.data));

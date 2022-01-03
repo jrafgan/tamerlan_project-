@@ -47,8 +47,9 @@ const Home = () => {
 
     useEffect(() => {
         loadFromAsyncStorage().then(r => {
+            const id = r.id || userState.userId;
+            dispatch(getUserAllAds(id));
             if (!r) return;
-            dispatch(getUserAllAds(r.id));
             dispatch(userSuccessHandler(r));
 
         }).catch(e => console.log('UE err TopMenu 61: ', e));
