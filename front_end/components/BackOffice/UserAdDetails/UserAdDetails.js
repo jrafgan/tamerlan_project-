@@ -3,9 +3,10 @@ import {Image, StyleSheet, Text, TextInput, View, ScrollView} from 'react-native
 import {useDispatch, useSelector} from "react-redux";
 import {Button, Card} from "react-native-elements";
 import moment from "moment";
-import {editAd} from "../../../store/actions/adsActions";
+import {editAd, removeAd} from "../../../store/actions/adsActions";
 import CityPicker from "../../ScreenBody/CityPicker";
 import {fullDescriptionLines, shortDescriptionLines} from "../../../constants";
+import ShowAlert from "../ShowAlert";
 
 const UserAdDetails = () => {
 
@@ -80,8 +81,29 @@ const UserAdDetails = () => {
             phone,
             imageUrls,
         }
+
         dispatch(editAd(data));
         console.log('changed data : ', data);
+    }
+
+    const triggerRemove = (id) => {
+        console.log('trigger remove started : ', id);
+        dispatch(removeAd({id}));
+    }
+
+    const prompt = (id) => {
+        const alertText = {
+            title: 'Внимание !',
+            message: "Вы действительно хотите удалить это объявление ?",
+            okButtonTitle: () => triggerRemove(id),
+            okButtonText: "Удалить",
+            cancelButtonTitle: "Удаление отменено.",
+            cancelButtonText: "Отмена",
+            onDismissTitle: "Удаление отменено."
+
+        }
+        ShowAlert(alertText);
+        console.log('ad id : ', id);
     }
 
     return (
@@ -150,9 +172,15 @@ const UserAdDetails = () => {
                             value={phone}
                         />
                         <Button
+                            containerStyle={styles.text}
                             title="Сохранить"
                             type="outline"
                             onPress={changeSubmit}
+                        />
+                        <Button
+                            title="Удалить объявление"
+                            type="outline"
+                            onPress={() => prompt(ad._id)}
                         />
                     </View>
                 </Card>

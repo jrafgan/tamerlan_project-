@@ -3,7 +3,7 @@ import {Image, StyleSheet, Text, View} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
 import {Card, Button} from 'react-native-elements';
 import moment from 'moment';
-import {getNewAds, setAdToModify} from "../../../store/actions/adsActions";
+import {setAdToModify} from "../../../store/actions/adsActions";
 import {useNavigation} from "@react-navigation/native";
 
 const NewAds = () => {
@@ -19,22 +19,12 @@ const NewAds = () => {
 
     const showDetails = ad => {
         dispatch(setAdToModify(ad));
-        console.log('ad : ', ad)
         navigation.navigate('AdminAdDetails');
-    }
-
-    const adminRequest = () => {
-        dispatch(getNewAds());
     }
 
     return (
         <View>
             <View><Text style={styles.headerText}>Новые объявления</Text></View>
-            {/*<Button*/}
-            {/*    title="Admin request"*/}
-            {/*    type="outline"*/}
-            {/*    onPress={adminRequest}*/}
-            {/*/>*/}
             {allAds && allAds.length > 0 ? allAds.map((ad) => <Card key={ad._id}>
                 <Card.Title>{ad.adTitle}</Card.Title>
                 <Card.Divider/>

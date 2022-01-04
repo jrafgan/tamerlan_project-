@@ -9,7 +9,7 @@ export const SET_YOULA_URL2_TO_STORE = 'SET_YOULA_URL2_TO_STORE';
 export const SET_AVITO_URL2_TO_STORE = 'SET_AVITO_URL2_TO_STORE';
 export const SET_MODIFY_AD = 'SET_MODIFY_AD';
 
-export const SET_TEST_HTML = 'SET_TEST_HTML';
+export const DELETE_ALL_ADS = 'DELETE_ALL_ADS';
 export const KEYWORD_IS_NULL_WARNING = 'KEYWORD_IS_NULL_WARNING';
 
 export const SET_ALL_ADS_TO_STORE = 'SET_ALL_ADS_TO_STORE';
@@ -21,7 +21,7 @@ export const preloaderHandler = showPreloader => ({type: SHOW_PRELOADER, showPre
 export const setCatIdToStore = catId => ({type: SET_CAT_ID_TO_STORE, catId});
 export const setCityToStore = city => ({type: SET_CITY_TO_STORE, city});
 export const setAdToModify = ad => ({type: SET_MODIFY_AD, ad});
-export const setAllAds = ads => ({type: SET_ALL_ADS_TO_STORE, ads});
+export const setAllAds = advs => ({type: SET_ALL_ADS_TO_STORE, advs});
 export const fetchGeoLocationSuccess = location => ({type: FETCH_GEOLOCATION_SUCCESS, location});
 export const setErrorMessage = error => ({type: SET_ERROR_MSG, error});
 export const setSuccessMessage = success => ({type: SET_SUCCESS_MSG, success});
@@ -39,18 +39,18 @@ const errorHandler = (err, dispatch) => {
         dispatch(notificationTimer(setErrorMessage('No network connection '), setErrorMessage(null)));
     }
 }
-
-export const getNewAds = () => {
-    return dispatch => {
-        return axios.get('/ads/admin').then( res => {
-                dispatch(preloaderHandler(true));
-                dispatch(setAllAds(res.data));
-            },
-            err => {
-                errorHandler(err, dispatch);
-            });
-    };
-};
+//
+// export const getNewAds = () => { //todo need to delete
+//     return dispatch => {
+//         return axios.get('/ads/admin').then( res => {
+//                 dispatch(preloaderHandler(true));
+//                 dispatch(setAllAds(res.data));
+//             },
+//             err => {
+//                 errorHandler(err, dispatch);
+//             });
+//     };
+// };
 
 export const getCityNameByGeocode = (url) => {
     return dispatch => {
@@ -83,6 +83,20 @@ export const createAd = adData => {
     };
 };
 
+export const removeAd = adId => {
+    return dispatch => {
+        return axios.delete('/ads/', adId).then(res => {
+                console.log('ad already removed : ', res.data);
+
+                dispatch(setAllAds(res.data.advs));
+                dispatch(notificationTimer(setSuccessMessage(res.data.success), setSuccessMessage(null)));
+            },
+            err => {
+                errorHandler(err, dispatch)
+            });
+    };
+};
+
 export const editAd = adData => {
     return dispatch => {
         return axios.patch('/ads/', adData).then(res => {
@@ -98,9 +112,13 @@ export const editAd = adData => {
 
 export const getUserAllAds = () => {
     return dispatch => {
-        dispatch(preloaderHandler(true));
+        // dispatch(preloaderHandler(true));
         return axios.get('/ads').then(res => {
-                console.log('all ads : ', res.data);
+                const resData = res.data;
+                console.log('all ads : ', resData);
+                if (resData.success) {
+                    return dispatch(notificationTimer(setSuccessMessage(resData.success), setSuccessMessage(null)));
+                }
                 dispatch(setAllAds(res.data));
             },
             err => {

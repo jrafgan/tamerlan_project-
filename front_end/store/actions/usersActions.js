@@ -27,15 +27,6 @@ axios.interceptors.response.use(async res => {
     const token = res.headers.authorization;
     const resData = res.data;
 
-    // if (resData.success) {
-    //     console.log('res success : ', resData.success);
-    // }
-    // if (resData.error) {
-    //     console.log('res error : ', resData.error);
-    //     if (resData.error.error === 'Logout') {
-    //         console.log('logout suppose to triggered : ')
-    //     }
-    // }
     if (resData.user) {
         const data = {
             username: resData.user.username,

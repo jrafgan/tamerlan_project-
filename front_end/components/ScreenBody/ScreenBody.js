@@ -1,13 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import {SafeAreaView, StyleSheet, View} from 'react-native'
-import AppAdsBlock from '../AppAdsBlock';
+import {View} from 'react-native'
 import CategoryPicker from './CategoryPicker';
 import SearchResult from "./SearchResult";
 import {useDispatch, useSelector} from "react-redux";
 import CityPicker from "./CityPicker";
-import {getNewAds, getUserAllAds, setCityToStore} from "../../store/actions/adsActions";
-import {loadFromAsyncStorage} from "../../store/asyncStorage";
-import {userSuccessHandler, setAuthorization} from "../../store/actions/usersActions";
+import {setCityToStore} from "../../store/actions/adsActions";
 
 const ScreenBody = () => {
 

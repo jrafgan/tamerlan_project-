@@ -6,7 +6,7 @@ import {
     SET_AVITO_URL2_TO_STORE,
     SHOW_PRELOADER,
     KEYWORD_IS_NULL_WARNING,
-    SET_TEST_HTML,
+    DELETE_ALL_ADS,
     FETCH_GEOLOCATION_SUCCESS,
     SET_ALL_ADS_TO_STORE,
     SET_MODIFY_AD,
@@ -55,11 +55,11 @@ const adsReducer = (state = initialState, action) => {
         case SET_AVITO_URL2_TO_STORE:
             return {...state, avitoUrl2: action.avitoUrl2};
 
-        case SET_TEST_HTML:
-            return {...state, testHTML: action.testHTML, showPreloader: false};
+        case DELETE_ALL_ADS:
+            return {...state, allAds: null};
 
         case SET_ALL_ADS_TO_STORE:
-            return {...state, allAds: action.ads, showPreloader: false};
+            return {...state, allAds: action.advs, showPreloader: false};
 
         case KEYWORD_IS_NULL_WARNING:
             return {...state, warning: action.warning};

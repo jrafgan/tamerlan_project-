@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {loadFromAsyncStorage} from "../store/asyncStorage";
 import {userSuccessHandler, logoutUser} from "../store/actions/usersActions";
 import BackOffice from "../screens/BackOffice";
-import {getUserAllAds} from "../store/actions/adsActions";
+import {DELETE_ALL_ADS, getUserAllAds} from "../store/actions/adsActions";
 
 const Menu = () => {
     const onPressLogin = () => {
@@ -33,7 +33,9 @@ const Home = () => {
         navigation.navigate('Login');
     }
 
-    const onPressBackOffice = () => {
+    const onPressBackOffice = async () => {
+        dispatch({type: DELETE_ALL_ADS});
+        await dispatch(getUserAllAds(userState.userId));
         navigation.navigate('BackOffice');
     }
 
@@ -42,34 +44,33 @@ const Home = () => {
     }
 
     const onPressLogOut = () => {
+        dispatch({type: DELETE_ALL_ADS});
         dispatch(logoutUser());
     }
 
     useEffect(() => {
         loadFromAsyncStorage().then(r => {
-            const id = r.id || userState.userId;
-            dispatch(getUserAllAds(id));
             if (!r) return;
+            dispatch(getUserAllAds(r.id));
             dispatch(userSuccessHandler(r));
-
         }).catch(e => console.log('UE err TopMenu 61: ', e));
-    }, [])
 
-    return (!userState.authorized ? <View style={styles.backofficeView}><TouchableOpacity onPress={onPressLogin}>
-        <Text style={styles.backofficeText}>Войти</Text>
-    </TouchableOpacity>
-        <TouchableOpacity onPress={onPressRegister}>
-            <Text style={{color: '#fff'}}>Регистрация</Text>
-        </TouchableOpacity></View> : <View style={styles.backofficeView}><TouchableOpacity onPress={onPressBackOffice}>
-        <Text style={styles.backofficeText}>Кабинет</Text>
-    </TouchableOpacity>
-        <TouchableOpacity onPress={onPressLogOut}>
-            <Text style={{color: '#fff'}}>Выйти</Text>
-        </TouchableOpacity></View>)
+}, []);
+
+return (!userState.authorized ? <View style={styles.backofficeView}><TouchableOpacity onPress={onPressLogin}>
+    <Text style={styles.backofficeText}>Войти</Text>
+</TouchableOpacity>
+    <TouchableOpacity onPress={onPressRegister}>
+        <Text style={{color: '#fff'}}>Регистрация</Text>
+    </TouchableOpacity></View> : <View style={styles.backofficeView}><TouchableOpacity onPress={onPressBackOffice}>
+    <Text style={styles.backofficeText}>Кабинет</Text>
+</TouchableOpacity>
+    <TouchableOpacity onPress={onPressLogOut}>
+        <Text style={{color: '#fff'}}>Выйти</Text>
+    </TouchableOpacity></View>)
 }
 
 const TopMenu = () => {
-
     return (
         <View style={styles.topMenu}>
             <Header style={styles.topMenu}
