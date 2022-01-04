@@ -65,4 +65,36 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
+router.delete('/', auth, async (req, res) => {
+    try {
+        const id = req.body.id;
+        const user = req.data.user;
+        res.header('Authorization', 'Bearer ' + user.accessToken);
+
+        await Ad.findByIdAndDelete(id, function (err, docs) {
+            if (err){
+                console.log(err);
+                return res.status(400).send({error: 'Ой! Уже удалено.'});
+            }
+            else{
+                console.log("Deleted : ", docs);
+            }
+        });
+
+        let ads;
+        if (user.username === 'admiN01') {
+            ads = await Ad.find({moderated: false});
+            if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
+        } else {
+            ads = await Ad.find({user_id: user._id});
+            if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
+        }
+
+        res.status(200).send({advs: ads, user: user, success: 'Объявление удалено.'});
+    } catch (e) {
+        console.log(e);
+        res.status(400).send({error: 'Ой! Не получилось удалить.'});
+    }
+});
+
 module.exports = router;
