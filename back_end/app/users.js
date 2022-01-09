@@ -27,36 +27,6 @@ router.post('/', async (req, res) => { //register new user
     }
 });
 
-//todo этот роут для писем юзеров
-
-// router.post('/message', async (req, res) => {
-//     try {
-//         const loginUser = req.body.user;
-//         const username = {username: loginUser.username};
-//         let user = await User.findOne(username);
-//
-//         if (!user) {
-//             return res.status(400).send({error: 'User does not exist'});
-//         }
-//
-//         const isMatch = await user.checkPassword(loginUser.password);
-//
-//         if (!isMatch) {
-//             return res.status(403).send({error: 'Password or login is incorrect'});
-//         }
-//
-//         const accessToken = jwt.sign(username, user.secretKey1, {expiresIn: config.accessTokenLife});
-//         user.refreshToken = jwt.sign(username, user.secretKey2, {expiresIn: config.refreshTokenLife});
-//         await user.save();
-//         res.header('Authorization', 'Bearer ' + accessToken);
-//
-//         return res.status(202).send({user: user});
-//     } catch (e) {
-//         console.log('login err : ', e);
-//         return res.status(400).send({error: e});
-//     }
-// });
-
 router.post('/sessions', async (req, res) => { //login user
     try {
         const loginUser = req.body.user;

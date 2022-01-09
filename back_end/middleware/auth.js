@@ -2,7 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 
-const reNewTokens = (aToken, user) => {
+const reNewTokens = (user) => {
     const username = {username: user.username};
     const accessToken = jwt.sign(username, user.secretKey1, {expiresIn: config.accessTokenLife});
     user.refreshToken = jwt.sign(username, user.secretKey2, {expiresIn: config.refreshTokenLife});
@@ -15,15 +15,13 @@ const reNewTokens = (aToken, user) => {
 
 const auth = async (req, res, next) => {
     try {
-        console.log('auth triggered : ');
         let accessToken = req.get('Authorization'); // получает АТ
+        accessToken = accessToken.split(' ')[1];
 
         if (!accessToken) {
             res.status(401).send({error: 'Logout'});
             return
         }
-
-        accessToken = accessToken.split(' ')[1];
         const userId = req.get('userId');
         const user = await User.findOne({_id: userId}); //Находит юзера
 
@@ -31,20 +29,20 @@ const auth = async (req, res, next) => {
             res.status(401).send({error: 'Logout'});
             return;
         }
-        jwt.verify(accessToken, user.secretKey1, function (err, decoded) {
+        jwt.verify(accessToken, user.secretKey1, async function (err, decoded) {
 
             if (decoded) {
-                req.data = reNewTokens(accessToken, user);
+                req.data = await reNewTokens(user);
                 next();
             }
 
             if (err) {
                 if (err.toString() === 'TokenExpiredError: jwt expired') {
                     console.log('error : ', err);
-                    req.data = reNewTokens(accessToken, user);
+                    req.data = reNewTokens(user);
                     next();
                 } else {
-                    console.log({error: 'Logout'}, err);
+                    console.log('another err : ', err);
                     res.status(401).send({error: 'Logout'});
                 }
             }

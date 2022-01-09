@@ -3,6 +3,65 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Ad = require('../models/Ad');
 
+const checkNewAds = async (reqData, successMsg, res) => {
+    let ads;
+    if (reqData.user.username === 'admiN01') {
+        ads = await Ad.find({moderated: false});
+        if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
+    } else {
+        ads = await Ad.find({user_id: reqData.user._id});
+        if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
+    }
+    res.status(200).send({advs: ads, user: reqData.user, success: successMsg});
+}
+
+router.patch('/', auth, async (req, res) => {
+    try {
+        const newData = req.body;
+        const reqData = req.data;
+        res.header('Authorization', 'Bearer ' + reqData.accessToken);
+        const update = {...newData};
+        const opts = {new: true};
+        await Ad.findByIdAndUpdate(newData.id, update, opts);
+        await checkNewAds(reqData, 'Объявление изменено.', res);
+        // let ads;
+        // if (reqData.user.username === 'admiN01') {
+        //     ads = await Ad.find({moderated: false});
+        //     if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
+        // } else {
+        //     ads = await Ad.find({user_id: reqData.user._id});
+        //     if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
+        // }
+        //
+        // res.status(200).send({advs: ads, user: reqData.user, success: 'Объявление изменено.'});
+    } catch (e) {
+        console.log(e);
+        res.status(400).send({error: 'Ой! Не получилось изменить.'});
+    }
+});
+
+router.get('/', auth, async (req, res) => {
+    try {
+        const reqData = req.data;
+
+        res.header('Authorization', 'Bearer ' + reqData.accessToken);
+        const id = reqData.user._id;
+        const username = reqData.user.username;
+        let ads;
+        if (username === 'admiN01') {
+            ads = await Ad.find({moderated: false});
+        } else {
+            ads = await Ad.find({user_id: id});
+        }
+        if (ads.length === 0) return res.send({user: reqData.user, success: 'У вас нет объявлений.'});
+
+        res.send({advs: ads, user: reqData.user});
+    } catch (e) {
+        console.log(e);
+        res.status(400).send({error: 'Ой! Что-то не так.'});
+    }
+});
+
 router.post('/', auth, async (req, res) => {
     try {
         const reqData = req.data;
@@ -18,58 +77,28 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-router.patch('/', auth, async (req, res) => {
+router.post('/sendmsg', auth, async (req, res) => {
     try {
-        const newData = req.body;
-        const user = req.data.user;
-        res.header('Authorization', 'Bearer ' + user.accessToken);
+        let msgData = req.body;
+        let reqData = req.data;
+        res.header('Authorization', 'Bearer ' + reqData.accessToken);
+        msgData = {...msgData, time: Date.now()}
+        reqData.user.messages.push(msgData);
 
-        const update = {...newData};
-        const opts = {new: true};
-        await Ad.findByIdAndUpdate(newData.id, update, opts);
-
-        let ads;
-        if (user.username === 'admiN01') {
-            ads = await Ad.find({moderated: false});
-            if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
-            console.log('admin req ads');
-        } else {
-            ads = await Ad.find({user_id: user._id});
-            if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
-        }
-
-        res.status(200).send({advs: ads, user: user, success: 'Объявление изменено.'});
+        await reqData.user.save();
+        return res.status(202).send({user: reqData.user, success: 'Сообщение отправлено !'});
     } catch (e) {
-        console.log(e);
-        res.status(400).send({error: 'Ой! Не получилось изменить.'});
+        console.log('login err : ', e);
+        return res.status(400).send({error: e});
     }
 });
 
-router.get('/', auth, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
-        const id = req.data.user._id;
-        const username = req.data.user.username;
-        console.log('ads for ', username);
-        let ads;
-        if (username === 'admiN01') {
-            ads = await Ad.find({moderated: false});
-        } else {
-            ads = await Ad.find({user_id: id});
-        }
-        if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
-
-        res.send(ads);
-    } catch (e) {
-        console.log(e);
-        res.status(400).send({error: 'Ой! Что-то не так.'});
-    }
-});
-
-router.delete('/', auth, async (req, res) => {
-    try {
-        const id = req.body.id;
-        const user = req.data.user;
-        res.header('Authorization', 'Bearer ' + user.accessToken);
+        const id = req.params.id;
+        const reqData = req.data;
+        console.log('reqparams id delete : ', id);
+        res.header('Authorization', 'Bearer ' + reqData.accessToken);
 
         await Ad.findByIdAndDelete(id, function (err, docs) {
             if (err){
@@ -81,16 +110,16 @@ router.delete('/', auth, async (req, res) => {
             }
         });
 
-        let ads;
-        if (user.username === 'admiN01') {
-            ads = await Ad.find({moderated: false});
-            if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
-        } else {
-            ads = await Ad.find({user_id: user._id});
-            if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
-        }
-
-        res.status(200).send({advs: ads, user: user, success: 'Объявление удалено.'});
+        await checkNewAds(reqData, 'Объявление удалено.', res);
+        // let ads;
+        // if (reqData.user.username === 'admiN01') {
+        //     ads = await Ad.find({moderated: false});
+        //     if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
+        // } else {
+        //     ads = await Ad.find({user_id: reqData.user._id});
+        //     if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
+        // }
+        // res.status(200).send({advs: ads, user: reqData.user, success: 'Объявление удалено.'});
     } catch (e) {
         console.log(e);
         res.status(400).send({error: 'Ой! Не получилось удалить.'});
