@@ -1,4 +1,5 @@
 const express = require('express');
+const dotenv = require("dotenv").config();
 const auth = require('../middleware/auth');
 const User = require('../models/User');
 const router = express.Router();
@@ -8,15 +9,18 @@ const config = require('../config');
 const nodemailer = require("nodemailer");
 const {google} = require("googleapis");
 
-const CLIENT_ID = '306550625882-8sqsmi5ghghqn04jeh8ek61lulhhqb32.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
-const REDIRECT_URI = 'https://developers.goole.com/oauthplayground';
-const REFRESH_TOKEN = '1//04utVJwsFlY61CgYIARAAGAQSNwF-L9IrGlw6rezS0juYbZNcjwJ2xDnsWzq4bxF3__K9GzY2Bgmh5IUfr2j-9uEfaSPP0JZ5JXk';
+
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+console.log('this is env : ', process.env);
 
 oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN});
 
-async function sendEmail () {
+const sendEmail = async pass => {
     try {
         const accessToken = await oAuth2Client.getAccessToken();
         const transport = nodemailer.createTransport({
@@ -31,20 +35,21 @@ async function sendEmail () {
             }
         })
         const mailOptions = {
-            from: 'Agregator admin < agregator.app@gmail.com >',
+            from: 'Админ Agregator < agregator.app@gmail.com >',
             to: 'maksatovy@gmail.com',
-            subject: 'Привет Тест',
-            text: 'Привет от нод майл',
-            html: '<h3>Привет от ХТМЛ тэгов</h3>>'
+            subject: 'Смена пароля в Agregator',
+            text: `Это ваш новый пароль ${pass}. после входа в личный кабинет смените его на новый`,
+            html: `<p>Это ваш новый пароль : <h3>${pass} </h3>. после входа в личный кабинет смените его на новый</p>>`
         }
 
         return  await transport.sendMail(mailOptions)
     } catch (e) {
+        console.log('sending email error ; ', e);
         return  e
     }
 }
 
-sendEmail().then(res => console.log('Email sent ... : ', res)).catch(e => console.log('email sending error : ', e.message))
+/*sendEmail().then(res => console.log('Email sent ... : ', res)).catch(e => console.log('email sending error : ', e.message));*/
 
 router.post('/', async (req, res) => { //register new user
     try {
@@ -115,10 +120,14 @@ router.put('/', async (req, res) => {
         const user = await User.findOne({email});
         console.log('user : ', user);
         if (!user) {
-            console.log('email found : ', user);
             return res.status(401).send({error: 'Этот email не зарегистрирован !'});
         }
-        // await req.user.save();
+        const password = nanoid();
+        user.password = password;
+        await user.save();
+        console.log('new user : ', user);
+        await sendEmail(password).then().catch(e => console.log('email sending error : ', e.message));
+
         return res.status(201).send({success: 'Проверьте свою почту !'});
     }  catch (e) {
         return res.send(e);
