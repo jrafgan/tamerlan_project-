@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const Ad = require('../models/Ad');
+const Message = require('../models/Message');
+const User = require('../models/User');
 
 const checkNewAds = async (reqData, successMsg, res) => {
     let ads;
@@ -77,21 +79,35 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-router.post('/sendmsg', auth, async (req, res) => {
-    try {
-        let msgData = req.body;
-        let reqData = req.data;
-        res.header('Authorization', 'Bearer ' + reqData.accessToken);
-        msgData = {...msgData, time: Date.now()}
-        reqData.user.messages.push(msgData);
-
-        await reqData.user.save();
-        return res.status(202).send({user: reqData.user, success: 'Сообщение отправлено !'});
-    } catch (e) {
-        console.log('login err : ', e);
-        return res.status(400).send({error: e});
-    }
-});
+// router.post('/sendmsg', auth, async (req, res) => {
+//     try {
+//         let msgData = req.body;
+//         let reqData = req.data;
+//         res.header('Authorization', 'Bearer ' + reqData.accessToken);
+//
+//         let recipient;
+//         if (msgData.toUser === 'admiN01') {
+//             recipient = await User.findOne({username: 'admiN01'});
+//             msgData.toUserId = recipient._id;
+//             msgData.toUsername = 'admiN01';
+//         } else {
+//             recipient = await User.findOne({_id: msgData.toUserId});
+//             msgData.toUserId = msgData.toUser;
+//             msgData.toUsername = recipient.username;
+//         }
+//
+//         const newMsg = await new Message(msgData);
+//
+//         console.log('msg data : ', newMsg);
+//         const inboxMsgs = await Message.find({toUserId: msgData.fromUserId});
+//         // const sentMsgs = await Message.find({toUserId: msgData.fromUserId});
+//
+//         return res.status(202).send({user: reqData.user, inboxMsgs, success: 'Сообщение отправлено !'});
+//     } catch (e) {
+//         console.log('message save err : ', e);
+//         return res.status(400).send({error: e});
+//     }
+// });
 
 router.delete('/:id', auth, async (req, res) => {
     try {

@@ -3,8 +3,8 @@ import {Button, StyleSheet, TextInput, View, Text} from 'react-native';
 import {registerUser} from "../store/actions/usersActions";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
-import BackOffice from "./BackOffice";
-import Notification from "../components/Notification";
+// import BackOffice from "./BackOffice";
+// import Notification from "../components/Notification";
 
 const Register = () => {
     const dispatch = useDispatch();
@@ -20,7 +20,6 @@ const Register = () => {
     const userAuthorized = useSelector(state => state.users.authorized);
 
     useEffect(() => {
-        console.log('register : ', userAuthorized);
         if (userAuthorized) {
             navigation.navigate('BackOffice');
         }
@@ -56,9 +55,9 @@ const Register = () => {
 
     return (
         <View style={styles.container}>
-            {err ? <View style={styles.badgeContainer}>
-                <Notification err={err} color='red'/>
-            </View> : null}
+            {/*{err ? <View style={styles.badgeContainer}>*/}
+            {/*    <Notification err={err} color='red'/>*/}
+            {/*</View> : null}*/}
             <TextInput style={styles.input}
                        placeholder="Username"
                        value={username}

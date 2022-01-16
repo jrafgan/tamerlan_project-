@@ -3,6 +3,7 @@ const config = require('./config');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const categories = require('./app/categories');
+const messages = require('./app/messages');
 const ads = require('./app/ads');
 const users = require('./app/users');
 
@@ -16,6 +17,7 @@ const port = 8003;
 
 mongoose.connect(config.dbUrl, config.mongoOptions).then(() => {
   app.use('/categories', categories);
+  app.use('/messages', messages);
   app.use('/users', users);
   app.use('/ads', ads);
 

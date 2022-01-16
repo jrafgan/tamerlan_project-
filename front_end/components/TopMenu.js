@@ -11,6 +11,7 @@ import {loadFromAsyncStorage} from "../store/asyncStorage";
 import {userSuccessHandler, logoutUser} from "../store/actions/usersActions";
 import BackOffice from "../screens/BackOffice";
 import {DELETE_ALL_ADS, getUserAllAds} from "../store/actions/adsActions";
+import {DELETE_ALL_MESSAGES, getUserMessages} from "../store/actions/messagesActions";
 
 const Menu = () => {
     const onPressLogin = () => {
@@ -36,6 +37,7 @@ const Home = () => {
     const onPressBackOffice = async () => {
         dispatch({type: DELETE_ALL_ADS});
         await dispatch(getUserAllAds(userState.userId));
+        await dispatch(getUserMessages(userState.userId));
         navigation.navigate('BackOffice');
     }
 
@@ -45,6 +47,8 @@ const Home = () => {
 
     const onPressLogOut = () => {
         dispatch({type: DELETE_ALL_ADS});
+        dispatch({type: DELETE_ALL_MESSAGES});
+        console.log('onpress logout works');
         dispatch(logoutUser());
     }
 
@@ -52,6 +56,7 @@ const Home = () => {
         loadFromAsyncStorage().then(r => {
             if (!r) return;
             dispatch(getUserAllAds(r.id));
+            dispatch(getUserMessages(r.id));
             dispatch(userSuccessHandler(r));
         }).catch(e => console.log('UE err TopMenu 61: ', e));
 

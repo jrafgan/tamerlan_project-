@@ -1,5 +1,6 @@
 import {applyMiddleware, combineReducers, compose, createStore} from "redux";
 import usersReducer from "./reducers/usersReducer";
+import messageReducer from "./reducers/messagesReducer";
 import { persistStore, persistReducer } from 'redux-persist'
 import thunkMiddleware from "redux-thunk";
 import adsReducer from "./reducers/adsReducer";
@@ -14,6 +15,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     ads: adsReducer,
     users: usersReducer,
+    messages: messageReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

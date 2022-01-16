@@ -68,12 +68,10 @@ const adsReducer = (state = initialState, action) => {
             return {...state, location: action.location};
 
         case SET_SUCCESS_MSG:
-            console.log('ads reducer succes : ', action.success)
             return {...state, success: action.success};
 
         case SET_ERROR_MSG:
-            console.log('ads reducer error : ', action.error)
-            return {...state, error: action.error};
+            return {...state, error: action.error, showPreloader: false};
 
         default:
             return state;

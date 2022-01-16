@@ -45,9 +45,9 @@ const BackOffice = () => {
                 rightComponent={<Home/>}
             />
             <ScrollView>
-
-                <Text style={styles.header}>Это твой личный кабинет. Здесь можно создавать свои объявления. This is
-                    clickable text</Text>
+                <Text style={styles.header}>Чтобы загружать фото или скриншоты, сперва надо загрузить свои фото на Google photos</Text>
+                <Text style={styles.header}>И далее скопировать URL ссылку на фото. Скопированныую ссылку вставляете в форму для фото или скриншотов.</Text>
+                <Text style={styles.header}>Обязательно разделяйте ссыкли на фото запятой, не то фото не отобразяться.</Text>
                 <BackOfficeTabs/>
             </ScrollView>
         </View>

@@ -1,5 +1,5 @@
 import axios from '../../axios-api';
-import {LOGOUT_USER, logoutUser, notificationTimer} from "./usersActions";
+import {LOGOUT_USER, logoutUser, notificationTimer, setSuccessMsg} from "./usersActions";
 
 export const SHOW_PRELOADER = 'SHOW_PRELOADER';
 export const SET_CAT_ID_TO_STORE = 'SET_CAT_ID_TO_STORE';
@@ -26,31 +26,18 @@ export const fetchGeoLocationSuccess = location => ({type: FETCH_GEOLOCATION_SUC
 export const setErrorMessage = error => ({type: SET_ERROR_MSG, error});
 export const setSuccessMessage = success => ({type: SET_SUCCESS_MSG, success});
 
-const errorHandler = (err, dispatch) => {
-    console.log('errHandler : ', err.response.data.error);
-    if (err) {
-        if (err.response.data.error === 'Logout') {
-            dispatch(notificationTimer(setErrorMessage('Войдите заново.'), setErrorMessage(null)));
-            dispatch(logoutUser());
+const adsErrorHandler = (err, dispatch) => {
+        if (err) {
+            if (err.response.data.error === 'Logout') {
+                dispatch(notificationTimer(setErrorMessage('Войдите заново.'), setErrorMessage(null)));
+                dispatch(logoutUser());
+            } else {
+                dispatch(notificationTimer(setErrorMessage(err.response.data), setErrorMessage(null)));
+            }
         } else {
-            dispatch(notificationTimer(setErrorMessage(err.response.data), setErrorMessage(null)));
+            dispatch(notificationTimer(setErrorMessage('No network connection '), setErrorMessage(null)));
         }
-    } else {
-        dispatch(notificationTimer(setErrorMessage('No network connection '), setErrorMessage(null)));
-    }
 }
-//
-// export const getNewAds = () => { //todo need to delete
-//     return dispatch => {
-//         return axios.get('/ads/admin').then( res => {
-//                 dispatch(preloaderHandler(true));
-//                 dispatch(setAllAds(res.data));
-//             },
-//             err => {
-//                 errorHandler(err, dispatch);
-//             });
-//     };
-// };
 
 export const getCityNameByGeocode = (url) => {
     return dispatch => {
@@ -65,7 +52,7 @@ export const getCityNameByGeocode = (url) => {
                 }
                 dispatch(fetchGeoLocationSuccess(data));
             }, error => {
-                errorHandler(error, dispatch)
+                adsErrorHandler(error, dispatch)
             });
     };
 };
@@ -73,26 +60,23 @@ export const getCityNameByGeocode = (url) => {
 export const createAd = adData => {
     return dispatch => {
         return axios.post('/ads/', adData).then(res => {
-                console.log('creatAd req, all ads : ', res.data);
                 dispatch(setAllAds(res.data.advs));
                 dispatch(notificationTimer(setSuccessMessage(res.data.success), setSuccessMessage(null)));
             },
             err => {
-                errorHandler(err, dispatch)
+                adsErrorHandler(err, dispatch)
             });
     };
 };
 
 export const removeAd = adId => {
     return dispatch => {
-        return axios.delete('/ads/', adId).then(res => {
-                console.log('ad already removed : ', res.data);
-
+        return axios.delete('/ads/' + adId).then(res => {
                 dispatch(setAllAds(res.data.advs));
                 dispatch(notificationTimer(setSuccessMessage(res.data.success), setSuccessMessage(null)));
             },
             err => {
-                errorHandler(err, dispatch)
+                adsErrorHandler(err, dispatch)
             });
     };
 };
@@ -100,12 +84,11 @@ export const removeAd = adId => {
 export const editAd = adData => {
     return dispatch => {
         return axios.patch('/ads/', adData).then(res => {
-                console.log('edited req, all ads : ', res.data);
                 dispatch(setAllAds(res.data.advs));
                 dispatch(notificationTimer(setSuccessMessage(res.data.success), setSuccessMessage(null)));
             },
             err => {
-                errorHandler(err, dispatch)
+                adsErrorHandler(err, dispatch)
             });
     };
 };
@@ -115,14 +98,14 @@ export const getUserAllAds = () => {
         // dispatch(preloaderHandler(true));
         return axios.get('/ads').then(res => {
                 const resData = res.data;
-                console.log('all ads : ', resData);
                 if (resData.success) {
                     return dispatch(notificationTimer(setSuccessMessage(resData.success), setSuccessMessage(null)));
                 }
-                dispatch(setAllAds(res.data));
+                dispatch(setAllAds(resData.advs));
             },
             err => {
-                errorHandler(err, dispatch)
+                adsErrorHandler(err, dispatch)
             });
     };
 };
+

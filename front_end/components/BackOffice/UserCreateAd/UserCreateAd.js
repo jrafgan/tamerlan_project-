@@ -7,8 +7,11 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import {Button} from "react-native-elements";
 import {useDispatch} from "react-redux";
 import {createAd} from "../../../store/actions/adsActions";
+import {useNavigation} from "@react-navigation/native";
 
 const UserCreateAd = () => {
+
+    const navigation = useNavigation()
     const [selectedCategory, setSelectedCategory] = useState('id2');
     const [selectedSubCategory, setSelectedSubCategory] = useState('sell');
     const [city, setCity] = useState('angarsk');
@@ -45,7 +48,7 @@ const UserCreateAd = () => {
         }
     }
 
-    const formSubmit = () => {
+    const formSubmit = async () => {
         if (imageUrlsString) {
             setImageUrls([imageUrlsString]);
         }
@@ -63,7 +66,7 @@ const UserCreateAd = () => {
             phone,
             imageUrls,
         }
-        dispatch(createAd(data));
+        await dispatch(createAd(data));
     }
     return (
         <View style={styles.container}>

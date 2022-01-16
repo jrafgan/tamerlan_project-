@@ -18,7 +18,6 @@ router.post('/', async (req, res) => { //register new user
         const accessToken = jwt.sign(username, newUser.secretKey1, {expiresIn: config.accessTokenLife});
 
         newUser.refreshToken = jwt.sign(username, newUser.secretKey2, {expiresIn: config.refreshTokenLife});
-
         res.header('Authorization', 'Bearer ' + accessToken);
         await newUser.save();
         res.status(201).send({user: newUser, success: 'Вы зарегистрировались !'});
@@ -32,7 +31,6 @@ router.post('/sessions', async (req, res) => { //login user
         const loginUser = req.body.user;
         const username = {username: loginUser.username};
         let user = await User.findOne(username);
-
         if (!user) {
             return res.status(400).send({error: 'Такой пользователь не существует !'});
         }
@@ -55,17 +53,6 @@ router.post('/sessions', async (req, res) => { //login user
     }
 });
 
-// router.patch('/', auth, async (req, res) => {
-//     try {
-//
-//         res.header('Authorization', 'Bearer ' + req.data.accessToken);
-//
-//         return res.status(202).send({info: 'ATrfrshd'});
-//     } catch (e) {
-//         return res.send({error: e});
-//     }
-// });
-
 router.post('/logout', async (req, res) => {
     try {
         const id = {_id: req.body.user.id};
@@ -80,15 +67,21 @@ router.post('/logout', async (req, res) => {
 });
 // todo здесь идет изменение Пароля юзера. Подключить эту фичу тоже
 
-// router.put('/', auth, async (req, res) => {
-//     try {
-//         req.user.password = req.body.user.password;
-//
-//         await req.user.save();
-//         return res.status(201).send({message: 'Password successfully changed !'});
-//     }  catch (e) {
-//         return res.send(e);
-//     }
-// });
+router.put('/', async (req, res) => {
+    try {
+        const email = req.body.email;
+        console.log('email received : ', email);
+        const user = await User.findOne({email});
+        console.log('user : ', user);
+        if (!user) {
+            console.log('email found : ', user);
+            return res.status(401).send({error: 'Этот email не зарегистрирован !'});
+        }
+        // await req.user.save();
+        return res.status(201).send({success: 'Проверьте свою почту !'});
+    }  catch (e) {
+        return res.send(e);
+    }
+});
 
 module.exports = router;

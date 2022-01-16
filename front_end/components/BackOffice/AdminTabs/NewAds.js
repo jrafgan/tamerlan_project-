@@ -5,6 +5,7 @@ import {Card, Button} from 'react-native-elements';
 import moment from 'moment';
 import {setAdToModify} from "../../../store/actions/adsActions";
 import {useNavigation} from "@react-navigation/native";
+import {localeTime, subCategoryTitle} from "../../../constants";
 
 const NewAds = () => {
     const dispatch = useDispatch();
@@ -12,10 +13,6 @@ const NewAds = () => {
 
     const allAds = useSelector(state => state.ads.allAds);
     const [ads, setAds] = useState([]);
-
-    const localeTime = date => {
-        return moment(date).local().format('HH:mm DD-MM-YYYY');
-    }
 
     const showDetails = ad => {
         dispatch(setAdToModify(ad));
@@ -35,7 +32,7 @@ const NewAds = () => {
                         source={{uri: ad.imageUrls[0]}}
                     />
                     <Text style={styles.name}>{localeTime(ad.date)}</Text>
-                    <Text style={styles.name}>{ad.selectedSubCategory}</Text>
+                    <Text style={styles.name}>{subCategoryTitle(ad.selectedSubCategory)}</Text>
                     <Text
                         style={[styles.name, {color: !ad.moderated ? 'red' : null}]}>{ad.moderated ? 'Проверено' : 'На модерации'}</Text>
                     <Text style={styles.name}>{ad.shortDescription}</Text>

@@ -5,7 +5,7 @@ import {useNavigation} from "@react-navigation/native";
 import {Button, Card} from "react-native-elements";
 import moment from "moment";
 import {editAd} from "../../../store/actions/adsActions";
-import {citiesArr} from "../../../constants";
+import {categoryTitle, citiesArr, cityTitle, localeTime, subCategoryTitle} from "../../../constants";
 
 const AdminAdDetails = () => {
     useNavigation();
@@ -13,25 +13,21 @@ const AdminAdDetails = () => {
     const dispatch = useDispatch();
 
     const [city, setCity] = useState('');
-    const [approve, setApprove] = useState('');
+    const [approve, setApprove] = useState(selectedAd.moderated);
 
     useEffect(() => {
-        if (selectedAd) {
-            citiesArr.find(el => {
-                if (el.value === selectedAd.city) {
-                    setCity(el.title);
-                }
-                return el.value === selectedAd.city;
-            });
-        }
-        if (selectedAd.moderated) {
-            setCity(selectedAd.moderated)
-        }
+        // if (selectedAd) {
+        //     citiesArr.find(el => {
+        //         if (el.value === selectedAd.city) {
+        //             setCity(el.title);
+        //         }
+        //         return el.value === selectedAd.city;
+        //     });
+        // }
+        // if (selectedAd.moderated) {
+        //     setCity(selectedAd.moderated)
+        // }
     }, []);
-
-    const localeTime = date => {
-        return moment(date).local().format('HH:mm DD-MM-YYYY');
-    }
 
     const changeStatus = () => {
         setApprove(!approve);
@@ -44,6 +40,10 @@ const AdminAdDetails = () => {
         }
         dispatch(editAd(data));
         console.log('changed data : ', data);
+    }
+
+    const createMsg = () => {
+
     }
 
     return (
@@ -72,9 +72,9 @@ const AdminAdDetails = () => {
                         <Text
                             style={[styles.name, {color: !approve ? 'red' : null}, {marginTop: 20}]}>{approve ? 'Проверено' : 'На модерации'}</Text>
                         <Text style={styles.text}>{localeTime(selectedAd.date)}</Text>
-                        <Text style={styles.text}>{selectedAd.selectedCategory}</Text>
-                        <Text style={styles.text}>{selectedAd.selectedSubCategory}</Text>
-                        <Text style={styles.text}>г. {city}</Text>
+                        <Text style={styles.text}>{categoryTitle(selectedAd.selectedCategory)}</Text>
+                        <Text style={styles.text}>{subCategoryTitle(selectedAd.selectedSubCategory)}</Text>
+                        <Text style={styles.text}>г. {cityTitle(selectedAd.city)}</Text>
                         <Text style={styles.text}>{selectedAd.shortDescription}</Text>
                         <Text style={styles.text}>{selectedAd.fullDescription}</Text>
                         <Text style={styles.text}>{selectedAd.price}</Text>
@@ -90,7 +90,7 @@ const AdminAdDetails = () => {
                             raised
                             title="Написать сообщение..."
                             type="outline"
-                            onPress={changeSubmit}
+                            onPress={createMsg}
                         />
                     </View>
                 </Card> : <Text style={styles.headerText}>Вы не выбрали</Text>}

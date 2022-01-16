@@ -5,17 +5,25 @@ import {Button, Card} from "react-native-elements";
 import moment from "moment";
 import {editAd, removeAd} from "../../../store/actions/adsActions";
 import CityPicker from "../../ScreenBody/CityPicker";
-import {fullDescriptionLines, shortDescriptionLines} from "../../../constants";
+import {
+    categoryTitle,
+    cityTitle,
+    fullDescriptionLines, localeTime,
+    shortDescriptionLines, subCategoryTitle
+} from "../../../constants";
 import ShowAlert from "../ShowAlert";
+import {useNavigation} from "@react-navigation/native";
 
 const UserAdDetails = () => {
-
+    const navigation = useNavigation();
     const ad = useSelector(state => state.ads.modifyingAd);
     const dispatch = useDispatch();
 
-    const [city, setCity] = useState(ad.city);
+    const [city, setCity] = useState('');
     const [shortDescription, setShortDescription] = useState(ad.shortDescription);
     const [fullDescription, setFullDescription] = useState(ad.fullDescription);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedSubCategory, setselectedSubCategory] = useState('');
 
     const [imageUrls, setImageUrls] = useState(ad.imageUrls);
     const [price, setPrice] = useState(ad.price);
@@ -24,8 +32,15 @@ const UserAdDetails = () => {
     const [borderWidth, setBorderWidth] = useState(1);
 
     useEffect(() => {
-
-    }, [])
+        if (ad) {
+            // const cityObj = citiesArr.find(el => el.value === ad.city);
+            // const category = categoriesArr.find(el => el.catId === ad.selectedCategory);
+            // const subCategory = adSubCategory.find(el => el.value === ad.selectedSubCategory);
+            setCity(cityTitle(ad.city));
+            setSelectedCategory(categoryTitle(ad.selectedCategory));
+            setselectedSubCategory(subCategoryTitle(ad.selectedSubCategory))
+        }
+    },[])
 
     const setNewImg = (url, ndx) => {
         const copy = imageUrls;
@@ -64,11 +79,7 @@ const UserAdDetails = () => {
         }
     }
 
-    const localeTime = date => {
-        return moment(date).local().format('HH:mm DD-MM-YYYY');
-    }
-
-    const changeSubmit = () => {
+    const changeSubmit = async () => {
         if (!shortDescription || !fullDescription || !city || !price || !phone) {
             alert('Ой вы что-то пропустили !')
         }
@@ -82,20 +93,20 @@ const UserAdDetails = () => {
             imageUrls,
         }
 
-        dispatch(editAd(data));
-        console.log('changed data : ', data);
+        await dispatch(editAd(data));
+        navigation.goBack();
     }
 
-    const triggerRemove = (id) => {
-        console.log('trigger remove started : ', id);
-        dispatch(removeAd({id}));
+    const triggerRemove = async () => {
+        await dispatch(removeAd(ad._id));
+        navigation.goBack();
     }
 
-    const prompt = (id) => {
+    const prompt = () => {
         const alertText = {
             title: 'Внимание !',
             message: "Вы действительно хотите удалить это объявление ?",
-            okButtonTitle: () => triggerRemove(id),
+            okButtonTitle: () => triggerRemove(),
             okButtonText: "Удалить",
             cancelButtonTitle: "Удаление отменено.",
             cancelButtonText: "Отмена",
@@ -103,7 +114,6 @@ const UserAdDetails = () => {
 
         }
         ShowAlert(alertText);
-        console.log('ad id : ', id);
     }
 
     return (
@@ -140,10 +150,10 @@ const UserAdDetails = () => {
                         <Text
                             style={[styles.name, {color: !ad.moderated ? 'red' : null}, {marginTop: 20}]}>{ad.moderated ? 'Проверено' : 'На модерации'}</Text>
                         <Text style={styles.text}>{localeTime(ad.date)}</Text>
-                        <Text style={styles.text}>{ad.selectedCategory}</Text>
-                        <Text style={styles.text}>{ad.selectedSubCategory}</Text>
+                        <Text style={styles.text}>{selectedCategory}</Text>
+                        <Text style={styles.text}>{selectedSubCategory}</Text>
                         <Text style={styles.text}>Выберите город</Text>
-                        <CityPicker saveHandler={saveCity} city={ad.city}/>
+                        <CityPicker saveHandler={saveCity} city={city}/>
                         <Text style={styles.text}>Краткое описание</Text>
                         <TextInput
                             style={[styles.textInput, {height: 20 * shortDescriptionLines}]}
@@ -180,7 +190,7 @@ const UserAdDetails = () => {
                         <Button
                             title="Удалить объявление"
                             type="outline"
-                            onPress={() => prompt(ad._id)}
+                            onPress={prompt}
                         />
                     </View>
                 </Card>

@@ -1,16 +1,18 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import HomeScreen from "../screens/HomeScreen";
 import BackOffice from "../screens/BackOffice";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
-import {NavigationContainer, useNavigation} from "@react-navigation/native";
+import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from '@react-navigation/stack';
 import {useSelector} from "react-redux";
 import {StyleSheet, View} from "react-native";
 import Notification from "./Notification";
 import UserCreateAd from "./BackOffice/UserCreateAd/UserCreateAd";
 import UserAdDetails from "./BackOffice/UserAdDetails/UserAdDetails";
+import MessageDetails from "./BackOffice/Messages/MessageDetails";
 import AdminAdDetails from "./BackOffice/AdminTabs/AdminAdDetails";
+import EmailForm from "../screens/EmailForm";
 
 const Stack = createStackNavigator();
 
@@ -26,10 +28,12 @@ const Navigation = () => {
                 {userState.authorized ? <><Stack.Screen name="BackOffice" component={BackOffice}/>
                 <Stack.Screen name="UserCreateAd" component={UserCreateAd}/>
                     <Stack.Screen name="UserAdDetails" component={UserAdDetails}/>
+                    <Stack.Screen name="MessageDetails" component={MessageDetails}/>
                     <Stack.Screen name="AdminAdDetails" component={AdminAdDetails}/>
                     </> : <>
                     <Stack.Screen name="Login" component={Login}/>
                     <Stack.Screen name="Register" component={Register}/>
+                    <Stack.Screen name="EmailForm" component={EmailForm}/>
                 </>}
             </Stack.Navigator>
             {userState.successMsg || adsState.success || userState.errorMsg || adsState.error ? <View style={styles.badgeContainer}>

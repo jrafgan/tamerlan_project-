@@ -10,6 +10,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     username: {
         type: String,
+        unique: true,
         required: true,
         validate: {
             validator: async function(value) {
@@ -17,7 +18,7 @@ const UserSchema = new Schema({
                 const user = await User.findOne({username: value});
                 if (user) throw new Error();
             },
-            message: 'This username is already taken '
+            error: 'Пользователь с таким логином уже существует !'
         }
     },
     email: {
@@ -29,7 +30,6 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    messages: [],
     secretKey1: {
         type: String,
         unique: true,

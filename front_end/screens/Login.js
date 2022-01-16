@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
 import {Button, StyleSheet, Text, TextInput, View, TouchableOpacity} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
-import Register from "./Register";
+// import Register from "./Register";
 import {useDispatch, useSelector} from "react-redux";
 import {loginUser} from "../store/actions/usersActions";
-import BackOffice from "./BackOffice";
-import Notification from "../components/Notification";
+import EmailForm from "./EmailForm";
+// import BackOffice from "./BackOffice";
 
 const Login = () => {
 
@@ -42,11 +42,12 @@ const Login = () => {
         }
     }
 
+    const goToEmailForm = () => {
+        navigation.navigate('EmailForm');
+    }
+
     return (
         <View style={styles.container}>
-            {err ? <View style={styles.badgeContainer}>
-                <Notification err={err} color='red'/>
-            </View> : null}
             <TextInput style={styles.input}
                        placeholder="Username"
                        value={username}
@@ -58,14 +59,11 @@ const Login = () => {
                        onChangeText={setPassword}
                        secureTextEntry
             />
-            <Button title="Войти" onPress={submit}/>
+            <Button title="Войти" onPress={submit} style={styles.button} disabled={!(username && password)}/>
             <Text style={styles.text}>Если нет аккаунта, то зарегистрируйтесь. </Text>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={goToRegister}
-            >
-                <Text>Регистрация</Text>
-            </TouchableOpacity>
+            <Button title="Регистрация" onPress={goToRegister} style={styles.button} />
+            <Text style={styles.text}>Или</Text>
+            <Button title="Забыли пароль ?" onPress={goToEmailForm} style={styles.button} />
         </View>
     )
 };
@@ -87,10 +85,11 @@ const styles = StyleSheet.create({
     button: {
         alignItems: "center",
         backgroundColor: "#DDDDDD",
-        padding: 10
+        padding: 10,
     },
     text: {
-        textAlign: 'center'
+        textAlign: 'center',
+        marginVertical: 10
     },
     badgeContainer: {
         position: 'absolute',

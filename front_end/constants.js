@@ -1,5 +1,15 @@
+import moment from "moment";
+
 export const apiURL = 'http://10.0.2.2:8003';
 //export const apiURL = 'localhost:8003/users/sessions';
+
+export const cityTitle = val => citiesArr.find(el => el.value === val).title;
+
+export const categoryTitle = val => categoriesArr.find(el => el.catId === val).title;
+
+export const subCategoryTitle = val => adSubCategory.find(el => el.value === val).title;
+
+export const localeTime = date => moment(date).local().format('HH:mm DD-MM-YYYY');
 
 export const youlaURL = 'https://youla.ru';
 

@@ -13,23 +13,22 @@ const initialState = {
     authorized: false,
     successMsg: '',
     errorMsg: '',
+    token: ''
 };
 
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
 
         case USER_SUCCESS_HANDLER:
-            return {...state, user: action.data.username, userId: action.data.id || action.data._id , authorized: true};
+            return {...state, user: action.data.username, userId: action.data.id || action.data._id , authorized: true, token: action.data.token};
 
         case LOGOUT_USER:
             return {...state, user: '', userId: '', authorized: false};
 
         case SET_SUCCESS_MESSAGE:
-            console.log('user reducer success : ', action.success)
             return {...state, successMsg: action.success};
 
         case SET_ERROR_MESSAGE:
-            console.log('user reducer error : ', action.error)
             return {...state, errorMsg: action.error};
 
         default:

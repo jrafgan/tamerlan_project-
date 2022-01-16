@@ -1,35 +1,52 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet} from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import {View, Text, StyleSheet, TouchableOpacity} from "react-native";
 import {Button} from "react-native-elements";
-import {createAd} from "../../../store/actions/adsActions";
 import CreateMessageForm from "./CreateMessageForm";
+import {ListItem, Icon} from 'react-native-elements'
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigation} from "@react-navigation/native";
+import {markMsgAsRead, setMsgToReply} from "../../../store/actions/messagesActions";
 
 const Messages = () => {
 
-    const [showForm, setShowForm] = useState(false)
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const [showForm, setShowForm] = useState(false);
+    const messages = useSelector(state => state.messages);
+    const admin = useSelector(state => state.users.user);
 
-    const createMessage = () => {
-        console.log('message created');
-    }
-
-    const toggleForm = () => {
-        console.log('toggle form')
-        setShowForm(!showForm);
+    const showDetails = data => {
+        navigation.navigate('MessageDetails');
+        dispatch(setMsgToReply(data));
+        if (data.newMsg === true) {
+            dispatch(markMsgAsRead(data._id));
+        }
     }
 
     return (
         <View>
-            <Button
-                title={!showForm ? "Написать в поддержку" : "Закрыть"}
-                type="solid"
-                raised
-                onPress={toggleForm}
-            />
-            {showForm ? <CreateMessageForm/> : null}
+            {admin && admin !== 'admiN01' ? <View>
+                <Button
+                    title={!showForm ? "Написать в поддержку" : "Закрыть"}
+                    type="solid"
+                    raised
+                    onPress={() => setShowForm(!showForm)}
+                />
+                {showForm ? <CreateMessageForm/> : null}
+            </View> : null}
             <Text style={styles.headerText}>Все сообщения</Text>
             <View style={styles.messagesContainer}>
-
+                {messages.allMessages.length > 0 ? messages.allMessages.map((item, i) => (
+                    <TouchableOpacity onPress={() => showDetails(item)} key={i}>
+                        <ListItem bottomDivider>
+                            <ListItem.Content >
+                                <ListItem.Title>{item.title}</ListItem.Title>
+                            </ListItem.Content>
+                            {item.newMsg ? <Icon name='mail'/> : null}
+                            <ListItem.Chevron/>
+                        </ListItem>
+                    </TouchableOpacity>
+                )) : null}
             </View>
         </View>
     );
@@ -47,6 +64,9 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         borderWidth: 1,
         minHeight: 20
+    },
+    bgColor: {
+        backgroundColor: 'rgba(244, 67, 54, 0.6)'
     }
 });
 
