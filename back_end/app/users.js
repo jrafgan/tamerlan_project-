@@ -5,6 +5,46 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const {nanoid} = require("nanoid");
 const config = require('../config');
+const nodemailer = require("nodemailer");
+const {google} = require("googleapis");
+
+const CLIENT_ID = '306550625882-8sqsmi5ghghqn04jeh8ek61lulhhqb32.apps.googleusercontent.com';
+const CLIENT_SECRET = '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';
+const REDIRECT_URI = 'https://developers.goole.com/oauthplayground';
+const REFRESH_TOKEN = '1//04utVJwsFlY61CgYIARAAGAQSNwF-L9IrGlw6rezS0juYbZNcjwJ2xDnsWzq4bxF3__K9GzY2Bgmh5IUfr2j-9uEfaSPP0JZ5JXk';
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN});
+
+async function sendEmail () {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'agregator.app@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken
+            }
+        })
+        const mailOptions = {
+            from: 'Agregator admin < agregator.app@gmail.com >',
+            to: 'maksatovy@gmail.com',
+            subject: 'Привет Тест',
+            text: 'Привет от нод майл',
+            html: '<h3>Привет от ХТМЛ тэгов</h3>>'
+        }
+
+        return  await transport.sendMail(mailOptions)
+    } catch (e) {
+        return  e
+    }
+}
+
+sendEmail().then(res => console.log('Email sent ... : ', res)).catch(e => console.log('email sending error : ', e.message))
 
 router.post('/', async (req, res) => { //register new user
     try {
@@ -25,6 +65,7 @@ router.post('/', async (req, res) => { //register new user
         res.status(400).send(e);
     }
 });
+
 
 router.post('/sessions', async (req, res) => { //login user
     try {
