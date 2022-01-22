@@ -1,9 +1,7 @@
-import React, {useEffect} from 'react';
-import {StyleSheet} from "react-native";
-import {View, Text} from "react-native";
+import React from 'react';
+import {StyleSheet, View, Text} from "react-native";
 
 const Notification = message => {
-
     return (
         <View style={[styles.badge, {backgroundColor: message.color}]}>
             <Text style={styles.badgeText}>{message.message}</Text>

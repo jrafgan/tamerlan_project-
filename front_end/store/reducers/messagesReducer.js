@@ -19,7 +19,6 @@ const messagesReducer = (state = initialState, action) => {
             return {...state, msgToReply: action.msg};
 
         case DELETE_ALL_MESSAGES:
-            console.log('delete all msgs reucer triggered');
             return {...state, allMessages: [], msgToReply: null};
 
         default:

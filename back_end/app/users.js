@@ -1,6 +1,6 @@
 const express = require('express');
 const dotenv = require("dotenv").config();
-const auth = require('../middleware/auth');
+const aut = require('../middleware/aut');
 const User = require('../models/User');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -9,18 +9,15 @@ const config = require('../config');
 const nodemailer = require("nodemailer");
 const {google} = require("googleapis");
 
-
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
-console.log('this is env : ', process.env);
-
 oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN});
 
-const sendEmail = async pass => {
+const sendEmail = async (email, pass) => {
     try {
         const accessToken = await oAuth2Client.getAccessToken();
         const transport = nodemailer.createTransport({
@@ -36,7 +33,7 @@ const sendEmail = async pass => {
         })
         const mailOptions = {
             from: 'Админ Agregator < agregator.app@gmail.com >',
-            to: 'maksatovy@gmail.com',
+            to: email,
             subject: 'Смена пароля в Agregator',
             text: `Это ваш новый пароль ${pass}. после входа в личный кабинет смените его на новый`,
             html: `<p>Это ваш новый пароль : <h3>${pass} </h3>. после входа в личный кабинет смените его на новый</p>>`
@@ -49,8 +46,6 @@ const sendEmail = async pass => {
     }
 }
 
-/*sendEmail().then(res => console.log('Email sent ... : ', res)).catch(e => console.log('email sending error : ', e.message));*/
-
 router.post('/', async (req, res) => { //register new user
     try {
         let newUser = new User(req.body.user);
@@ -61,7 +56,6 @@ router.post('/', async (req, res) => { //register new user
         newUser.secretKey1 = secretKey1;
         newUser.secretKey2 = secretKey2;
         const accessToken = jwt.sign(username, newUser.secretKey1, {expiresIn: config.accessTokenLife});
-
         newUser.refreshToken = jwt.sign(username, newUser.secretKey2, {expiresIn: config.refreshTokenLife});
         res.header('Authorization', 'Bearer ' + accessToken);
         await newUser.save();
@@ -70,7 +64,6 @@ router.post('/', async (req, res) => { //register new user
         res.status(400).send(e);
     }
 });
-
 
 router.post('/sessions', async (req, res) => { //login user
     try {
@@ -91,10 +84,9 @@ router.post('/sessions', async (req, res) => { //login user
         user.refreshToken = jwt.sign(username, user.secretKey2, {expiresIn: config.refreshTokenLife});
         await user.save();
         res.header('Authorization', 'Bearer ' + accessToken);
-
         res.status(202).send({user: user, success: 'Добро пожаловать !'});
     } catch (e) {
-        console.log('login err : ', e);
+        console.log(e);
         res.status(400).send({error: e});
     }
 });
@@ -111,9 +103,28 @@ router.post('/logout', async (req, res) => {
         res.send(e);
     }
 });
-// todo здесь идет изменение Пароля юзера. Подключить эту фичу тоже
 
-router.put('/', async (req, res) => {
+router.put('/', aut, async (req, res) => {
+    try {
+        const reqBody = req.body;
+        let reqData = req.data;
+        let user = await User.findOne({_id: reqData.user._id}); //Находит юзера
+
+        const isMatch = await user.checkPassword(reqBody.oldPass);
+        if (!isMatch) {
+            return res.status(403).send({error: 'Logout'});
+        }
+        user.password = reqBody.newPass;
+        res.header('Authorization', 'Bearer ' + user.accessToken);
+        await user.save();
+        return res.status(201).send({user: user, success: 'Пароль изменен !'}); //для личного кабинете всегда должен быть отправлен user
+    }  catch (e) {
+        console.log(e);
+        return res.send(e);
+    }
+});
+
+router.post('/email', async (req, res) => {
     try {
         const email = req.body.email;
         console.log('email received : ', email);
@@ -130,6 +141,7 @@ router.put('/', async (req, res) => {
 
         return res.status(201).send({success: 'Проверьте свою почту !'});
     }  catch (e) {
+        console.log(e);
         return res.send(e);
     }
 });

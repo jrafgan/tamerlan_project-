@@ -19,6 +19,7 @@ const Stack = createStackNavigator();
 const Navigation = () => {
     const userState = useSelector(state => state.users);
     const adsState = useSelector(state => state.ads);
+    console.log('messages : ', userState.errorMsg);
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName={'Home'} screenOptions={{

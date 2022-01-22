@@ -6,8 +6,6 @@ import {
 } from "../actions/usersActions";
 
 const initialState = {
-    registerError: null,
-    loginError: null,
     user: '',
     userId: '',
     authorized: false,
@@ -29,6 +27,7 @@ const usersReducer = (state = initialState, action) => {
             return {...state, successMsg: action.success};
 
         case SET_ERROR_MESSAGE:
+            console.log('user reducer error : ', action.error);
             return {...state, errorMsg: action.error};
 
         default:
