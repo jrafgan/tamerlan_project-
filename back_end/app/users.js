@@ -46,20 +46,33 @@ const sendEmail = async (email, pass) => {
     }
 }
 
+const responseFunc = async (res, user, successMsg) => {
+    try {
+        const username = {username: user.username};
+        const accessToken = jwt.sign(username, user.secretKey1, {expiresIn: config.accessTokenLife});
+        user.refreshToken = jwt.sign(username, user.secretKey2, {expiresIn: config.refreshTokenLife});
+        res.header('Authorization', 'Bearer ' + accessToken);
+        await user.save();
+        res.status(201).send({user: user, success: successMsg});
+    } catch(e) {
+        console.log(e);
+        res.status(400).send({error: e});
+    }
+}
+
 router.post('/', async (req, res) => { //register new user
     try {
         let newUser = new User(req.body.user);
-        const username = {username: newUser.username};
-        const password = {password: newUser.password};
-        const secretKey1 = nanoid();
-        const secretKey2 = nanoid();
-        newUser.secretKey1 = secretKey1;
-        newUser.secretKey2 = secretKey2;
-        const accessToken = jwt.sign(username, newUser.secretKey1, {expiresIn: config.accessTokenLife});
-        newUser.refreshToken = jwt.sign(username, newUser.secretKey2, {expiresIn: config.refreshTokenLife});
-        res.header('Authorization', 'Bearer ' + accessToken);
-        await newUser.save();
-        res.status(201).send({user: newUser, success: 'Вы зарегистрировались !'});
+
+        newUser.secretKey1 = nanoid();
+        newUser.secretKey2 = nanoid();
+        await responseFunc(res, newUser, 'Вы зарегистрировались !')
+
+        // const accessToken = jwt.sign(username, newUser.secretKey1, {expiresIn: config.accessTokenLife});
+        // newUser.refreshToken = jwt.sign(username, newUser.secretKey2, {expiresIn: config.refreshTokenLife});
+        // res.header('Authorization', 'Bearer ' + accessToken);
+        // await newUser.save();
+        // res.status(201).send({user: newUser, success: 'Вы зарегистрировались !'});
     } catch (e) {
         res.status(400).send(e);
     }
@@ -80,11 +93,13 @@ router.post('/sessions', async (req, res) => { //login user
             return res.status(403).send({error: 'Неправильный логин или пароль !'});
         }
 
-        const accessToken = jwt.sign(username, user.secretKey1, {expiresIn: config.accessTokenLife});
+        await responseFunc(res, user, 'Добро пожаловать !')
+
+        /*const accessToken = jwt.sign(username, user.secretKey1, {expiresIn: config.accessTokenLife});
         user.refreshToken = jwt.sign(username, user.secretKey2, {expiresIn: config.refreshTokenLife});
         await user.save();
         res.header('Authorization', 'Bearer ' + accessToken);
-        res.status(202).send({user: user, success: 'Добро пожаловать !'});
+        res.status(202).send({user: user, success: 'Добро пожаловать !'});*/
     } catch (e) {
         console.log(e);
         res.status(400).send({error: e});
@@ -115,6 +130,7 @@ router.put('/', aut, async (req, res) => {
             return res.status(403).send({error: 'Logout'});
         }
         user.password = reqBody.newPass;
+
         res.header('Authorization', 'Bearer ' + user.accessToken);
         await user.save();
         return res.status(201).send({user: user, success: 'Пароль изменен !'}); //для личного кабинете всегда должен быть отправлен user
