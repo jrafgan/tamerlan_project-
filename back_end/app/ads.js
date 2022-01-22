@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const aut = require('../middleware/aut');
 const Ad = require('../models/Ad');
 const Message = require('../models/Message');
 const User = require('../models/User');
@@ -17,7 +17,7 @@ const checkNewAds = async (reqData, successMsg, res) => {
     res.status(200).send({advs: ads, user: reqData.user, success: successMsg});
 }
 
-router.patch('/', auth, async (req, res) => {
+router.patch('/', aut, async (req, res) => {
     try {
         const newData = req.body;
         const reqData = req.data;
@@ -42,7 +42,7 @@ router.patch('/', auth, async (req, res) => {
     }
 });
 
-router.get('/', auth, async (req, res) => {
+router.get('/', aut, async (req, res) => {
     try {
         const reqData = req.data;
 
@@ -64,7 +64,7 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
-router.post('/', auth, async (req, res) => {
+router.post('/', aut, async (req, res) => {
     try {
         const reqData = req.data;
         res.header('Authorization', 'Bearer ' + reqData.accessToken);
@@ -79,7 +79,7 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-// router.post('/sendmsg', auth, async (req, res) => {
+// router.post('/sendmsg', aut, async (req, res) => {
 //     try {
 //         let msgData = req.body;
 //         let reqData = req.data;
@@ -109,7 +109,7 @@ router.post('/', auth, async (req, res) => {
 //     }
 // });
 
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', aut, async (req, res) => {
     try {
         const id = req.params.id;
         const reqData = req.data;

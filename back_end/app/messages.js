@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const aut = require('../middleware/aut');
 const Message = require('../models/Message');
 const User = require('../models/User');
 
@@ -13,11 +13,10 @@ const getMsgs = async (reqData, res) => {
         messages = await Message.find({toUserId: reqData.user._id});
         if (messages.length === 0) return res.status(202).send({user: reqData.user});
     }
-    console.log('messages to send : ', messages);
     res.status(202).send({user: reqData.user, messages});
 }
 
-router.get('/', auth, async (req, res) => {
+router.get('/', aut, async (req, res) => {
     try {
         let reqData = req.data;
         await getMsgs(reqData, res);
@@ -27,7 +26,7 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
-router.post('/', auth, async (req, res) => {
+router.post('/', aut, async (req, res) => {
     try {
         let msgData = req.body;
         let reqData = req.data;
@@ -55,11 +54,10 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', aut, async (req, res) => {
     try {
         let reqData = req.data;
         const id = req.params.id;
-        console.log('message to update : ', id);
         const update = {newMsg: false};
         const opts = {new: true};
         await Message.findByIdAndUpdate(id, update, opts);

@@ -51,8 +51,12 @@ export const notificationTimer = (func1, func2) => {
 }
 
 export const errorHandler = (err, dispatch) => {
-    console.log('error msg ; ', err.response.data.errors ? err.response.data.errors.username.properties.error : err.response.data.error);
+    console.log(err)
+    /*console.log('error msg ; ', err.response.data.errors ? err.response.data.errors.username.properties.error : err.response.data.error);*/
     if (err) {
+        /*if (err.response.data.error === 'Logout') { todo Logout function
+            dispatch({type: LOGOUT_USER});
+        }*/
         dispatch(notificationTimer(setErrorMsg(err.response.data.errors ? err.response.data.errors.username.properties.error : err.response.data.error), setErrorMsg(null)));
     } else {
         dispatch(notificationTimer(setErrorMsg('No network connection'), setErrorMsg(null)));
@@ -91,9 +95,18 @@ export const loginUser = userData => {
 };
 
 export const checkEmail = emailObj => {
-    console.log('email send to server ;',emailObj);
     return dispatch => {
-        return axios.put('/users', emailObj).then(res => {
+        return axios.post('/users/email', emailObj).then(res => {
+                // dispatch(userSuccessHandler(res.data.user));
+                dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
+            },
+            err => errorHandler(err, dispatch));
+    }
+};
+
+export const setNewPassword = passObj => {
+    return dispatch => {
+        return axios.put('/users', passObj).then(res => {
                 // dispatch(userSuccessHandler(res.data.user));
                 dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
             },

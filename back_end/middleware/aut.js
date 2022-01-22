@@ -13,7 +13,7 @@ const reNewTokens = (user) => {
     };
 }
 
-const auth = async (req, res, next) => {
+const aut = async (req, res, next) => {
     try {
         let accessToken = req.get('Authorization'); // получает АТ
         accessToken = accessToken.split(' ')[1];
@@ -52,4 +52,4 @@ const auth = async (req, res, next) => {
     }
 };
 
-module.exports = auth;
+module.exports = aut;

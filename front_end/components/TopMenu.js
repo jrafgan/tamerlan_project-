@@ -13,19 +13,19 @@ import BackOffice from "../screens/BackOffice";
 import {DELETE_ALL_ADS, getUserAllAds} from "../store/actions/adsActions";
 import {DELETE_ALL_MESSAGES, getUserMessages} from "../store/actions/messagesActions";
 
-const Menu = () => {
+const LeftElelement = () => {
     const onPressLogin = () => {
         //navigation.navigate('BackOffice')
     }
     return <Icon
-        name='home' style={{color: '#fff', size: 30}} onPress={onPressLogin}/>
+        name='menu' style={{color: '#fff', size: 30}} onPress={onPressLogin}/>
 }
 
 const Location = () => {
     return <GetGeoLocation/>
 }
 
-const Home = () => {
+const RightElement = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const userState = useSelector(state => state.users);
@@ -80,9 +80,9 @@ const TopMenu = () => {
         <View style={styles.topMenu}>
             <Header style={styles.topMenu}
                     placement="left"
-                    leftComponent={<Menu/>}
+                    leftComponent={<LeftElelement/>}
                     centerComponent={<Location/>}
-                    rightComponent={<Home/>}
+                    rightComponent={<RightElement/>}
             />
         </View>
     )
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
         flexWrap: 'nowrap'
     },
     backofficeText: {
-        marginRight: 10,
+        marginRight: 20,
         color: '#fff'
     }
 });

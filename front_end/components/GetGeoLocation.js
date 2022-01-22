@@ -40,7 +40,7 @@ export default function GetGeoLocation() {
     if (errorMsg) {
         text = errorMsg;
     } else if (clientLocation) {
-        text = `${clientLocation}`
+        text = `г. ${clientLocation}`
     }
 
     return (
