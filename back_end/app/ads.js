@@ -9,11 +9,12 @@ const checkNewAds = async (reqData, successMsg, res) => {
     let ads;
     if (reqData.user.username === 'admiN01') {
         ads = await Ad.find({moderated: false});
-        if (ads.length === 0) return res.send({success: 'Нет новых объявлений.'});
+        if (ads.length === 0) return res.send({user: reqData.user, success: 'Нет новых объявлений.'});
     } else {
         ads = await Ad.find({user_id: reqData.user._id});
-        if (ads.length === 0) return res.send({success: 'У вас нет объявлений.'});
+        if (ads.length === 0) return res.send({user: reqData.user, success: 'У вас нет объявлений.'});
     }
+    res.header('Authorization', 'Bearer ' + reqData.accessToken);
     res.status(200).send({advs: ads, user: reqData.user, success: successMsg});
 }
 
@@ -23,7 +24,7 @@ router.patch('/', aut, async (req, res) => {
         const reqData = req.data;
         res.header('Authorization', 'Bearer ' + reqData.accessToken);
         const update = {...newData};
-        const opts = {new: true};
+        const opts = { returnOriginal: false };
         await Ad.findByIdAndUpdate(newData.id, update, opts);
         await checkNewAds(reqData, 'Объявление изменено.', res);
         // let ads;
@@ -42,7 +43,19 @@ router.patch('/', aut, async (req, res) => {
     }
 });
 
-router.get('/', aut, async (req, res) => {
+router.get('/', async (req, res) => {
+    try {
+        let advs = await Ad.find({moderated: true, paid: false});
+        let paidAdvs = await Ad.find({moderated: true, paid: true});
+        if (advs.length === 0) return res.send({error: 'Новых объявлений нет.'});
+        res.send({advs, paidAdvs, success: 'Рад видеть вас !'});
+    } catch (e) {
+        console.log(e);
+        res.status(400).send({error: 'Ой! Что-то не так.'});
+    }
+});
+
+router.get('/user', aut, async (req, res) => {
     try {
         const reqData = req.data;
 
