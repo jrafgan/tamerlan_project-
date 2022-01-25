@@ -5,7 +5,6 @@ import {useDispatch} from "react-redux";
 import {setCityToStore} from "../../store/actions/adsActions";
 
 const CityPicker = ({saveHandler, city}) => {
-
     const [text, setText] = useState('');
     const [filteredCities, setFilteredCities] = useState([]);
     // const clientLocation = useSelector(state => state.ads.location);
@@ -65,7 +64,7 @@ const styles = StyleSheet.create({
     input: {
         height: 40,
         borderWidth: 1,
-        paddingHorizontal: 10,
+        paddingHorizontal: 35,
         fontSize: 16,
         marginBottom: 15
     },

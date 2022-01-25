@@ -15,9 +15,9 @@ const MessageDetails = () => {
         console.log('msg to reply: ', message);
     }, [])
 
-    const replyTo = () => {
-        setShowForm(!showForm);
-    }
+    // const replyTo = () => {
+    //     setShowForm(!showForm);
+    // }
 
     return (
         <View>
@@ -37,7 +37,7 @@ const MessageDetails = () => {
                     <Button
                         title={!showForm ? "Ответить" : "Закрыть"}
                         type="outline"
-                        onPress={replyTo}
+                        onPress={() => setShowForm(!showForm)}
                     />
                 </View>
             </Card> : null}

@@ -5,7 +5,8 @@ import {useNavigation} from "@react-navigation/native";
 import {Button, Card} from "react-native-elements";
 import moment from "moment";
 import {editAd} from "../../../store/actions/adsActions";
-import {categoryTitle, citiesArr, cityTitle, localeTime, subCategoryTitle} from "../../../constants";
+import {categoryTitle, cityTitle, localeTime, subCategoryTitle} from "../../../constants";
+import CreateMessageForm from "../Messages/CreateMessageForm";
 
 const AdminAdDetails = () => {
     useNavigation();
@@ -14,6 +15,8 @@ const AdminAdDetails = () => {
 
     const [city, setCity] = useState('');
     const [approve, setApprove] = useState(selectedAd.moderated);
+    const [paid, setPaid] = useState(selectedAd.paid);
+    const [showForm, setShowForm] = useState(selectedAd.moderated);
 
     useEffect(() => {
         // if (selectedAd) {
@@ -33,13 +36,18 @@ const AdminAdDetails = () => {
         setApprove(!approve);
     }
 
+    const makePaid = () => {
+        setPaid(!paid);
+    }
+
     const changeSubmit = () => {
         const data = {
             id: selectedAd._id,
             moderated: approve,
+            paid: paid
         }
         dispatch(editAd(data));
-        console.log('changed data : ', data);
+        console.log('paid ad : ', data);
     }
 
     const createMsg = () => {
@@ -69,6 +77,15 @@ const AdminAdDetails = () => {
                                 titleStyle={{color: approve ? 'rgba(78, 116, 289, 1)' : 'red',}}
                             />
                         </View>
+                        <View style={styles.text}>
+                            <Button
+                                raised
+                                title={paid ? 'Оплачено' : 'Неоплачено'}
+                                type="outline"
+                                onPress={makePaid}
+                                titleStyle={{color: paid ? 'rgba(78, 116, 289, 1)' : 'red',}}
+                            />
+                        </View>
                         <Text
                             style={[styles.name, {color: !approve ? 'red' : null}, {marginTop: 20}]}>{approve ? 'Проверено' : 'На модерации'}</Text>
                         <Text style={styles.text}>{localeTime(selectedAd.date)}</Text>
@@ -90,10 +107,11 @@ const AdminAdDetails = () => {
                             raised
                             title="Написать сообщение..."
                             type="outline"
-                            onPress={createMsg}
+                            onPress={() => setShowForm(!showForm)}
                         />
                     </View>
                 </Card> : <Text style={styles.headerText}>Вы не выбрали</Text>}
+                {showForm ? <CreateMessageForm /> : null}
             </ScrollView>
         </View>
     );
@@ -102,7 +120,7 @@ const AdminAdDetails = () => {
 const styles = StyleSheet.create({
     image: {
         height: 350,
-        width: 350
+        width: 300
     },
     text: {
         marginTop: 10,

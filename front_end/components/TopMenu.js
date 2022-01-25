@@ -13,7 +13,7 @@ import BackOffice from "../screens/BackOffice";
 import {DELETE_ALL_ADS, getUserAllAds} from "../store/actions/adsActions";
 import {DELETE_ALL_MESSAGES, getUserMessages} from "../store/actions/messagesActions";
 
-const LeftElelement = () => {
+const LeftElement = () => {
     const onPressLogin = () => {
         //navigation.navigate('BackOffice')
     }
@@ -55,7 +55,6 @@ const RightElement = () => {
     useEffect(() => {
         loadFromAsyncStorage().then(r => {
             if (!r) return;
-            dispatch(getUserAllAds(r.id));
             dispatch(getUserMessages(r.id));
             dispatch(userSuccessHandler(r));
         }).catch(e => console.log('UE err TopMenu 61: ', e));
@@ -66,7 +65,7 @@ return (!userState.authorized ? <View style={styles.backofficeView}><TouchableOp
     <Text style={styles.backofficeText}>Войти</Text>
 </TouchableOpacity>
     <TouchableOpacity onPress={onPressRegister}>
-        <Text style={{color: '#fff'}}>Регистрация</Text>
+        <Text style={{color: '#fff'}}>Подать объявление</Text>
     </TouchableOpacity></View> : <View style={styles.backofficeView}><TouchableOpacity onPress={onPressBackOffice}>
     <Text style={styles.backofficeText}>Кабинет</Text>
 </TouchableOpacity>
@@ -80,7 +79,7 @@ const TopMenu = () => {
         <View style={styles.topMenu}>
             <Header style={styles.topMenu}
                     placement="left"
-                    leftComponent={<LeftElelement/>}
+
                     centerComponent={<Location/>}
                     rightComponent={<RightElement/>}
             />

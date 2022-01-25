@@ -11,7 +11,9 @@ import {
     SET_ALL_ADS_TO_STORE,
     SET_MODIFY_AD,
     SET_SUCCESS_MSG,
-    SET_ERROR_MSG
+    SET_ERROR_MSG,
+    SET_PUBLISHED_ADS,
+    SET_PAID_ADS
 } from '../actions/adsActions';
 
 const initialState = {
@@ -21,21 +23,26 @@ const initialState = {
     keyWord: '',
     youlaUrl2: '',
     avitoUrl2: '',
-    expensiveAds: null,
     allAds: null,
-    cheapAds: null,
+    paidAds: null,
     warning: false,
     location: '',
-    testHTML: null,
     error: '',
     success: '',
     modifyingAd: null,
+    publishedAds: null
 };
 
 const adsReducer = (state = initialState, action) => {
     switch (action.type) {
         case SHOW_PRELOADER:
             return {...state, showPreloader: action.showPreloader};
+
+        case SET_PUBLISHED_ADS:
+            return {...state, publishedAds: action.advs, showPreloader: false};
+
+        case SET_PAID_ADS:
+            return {...state, paidAds: action.paidAdvs};
 
         case SET_CAT_ID_TO_STORE:
             return {...state, catId: action.catId};

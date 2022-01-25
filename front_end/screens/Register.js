@@ -59,24 +59,24 @@ const Register = () => {
             {/*    <Notification err={err} color='red'/>*/}
             {/*</View> : null}*/}
             <TextInput style={styles.input}
-                       placeholder="Username"
+                       placeholder="Имя пользователя"
                        value={username}
                        onChangeText={setUsername}
             />
             <TextInput style={styles.input}
-                       placeholder="Email ID"
+                       placeholder="Ваш eMail"
                        onChangeText={validate}
                        value={email}
             />
             {warning ? <Text style={styles.warningText}>Не правильный E-mail</Text> : null}
             <TextInput style={styles.input}
-                       placeholder="Password"
+                       placeholder="Пароль"
                        value={password}
                        onChangeText={setPassword}
                        secureTextEntry
             />
             <TextInput style={styles.input}
-                       placeholder="Repeat password"
+                       placeholder="Повторите пароль"
                        value={retyped}
                        onChangeText={setRetyped}
                        secureTextEntry

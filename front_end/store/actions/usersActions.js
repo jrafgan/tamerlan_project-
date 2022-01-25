@@ -27,6 +27,7 @@ axios.interceptors.request.use(async req => {
 axios.interceptors.response.use(async res => {
     const token = res.headers.authorization;
     const resData = res.data;
+    console.log('response of interceptor : ', resData.user)
 
     if (token) {
         const data = {
@@ -55,6 +56,7 @@ export const errorHandler = (err, dispatch) => {
     /*console.log('error msg ; ', err.response.data.errors ? err.response.data.errors.username.properties.error : err.response.data.error);*/
     if (err) {
         /*if (err.response.data.error === 'Logout') { todo Logout function
+        clearData();
             dispatch({type: LOGOUT_USER});
         }*/
         dispatch(notificationTimer(setErrorMsg(err.response.data.errors ? err.response.data.errors.username.properties.error : err.response.data.error), setErrorMsg(null)));
@@ -63,11 +65,18 @@ export const errorHandler = (err, dispatch) => {
     }
 }
 
+const clearData = () => {
+    return dispatch => {
+        console.log('clear data triggered')
+        dispatch({type: LOGOUT_USER});
+        clearAsyncStorage().then().catch(e => console.log('user actions 82 : ', e));
+    }
+}
+
 export const logoutUser = () => {
     return dispatch => {
         return axios.post('/users/logout').then(res => {
-                dispatch({type: LOGOUT_USER});
-                clearAsyncStorage().then().catch(e => console.log('user actions 82 : ', e));
+                dispatch(clearData());
                 dispatch(notificationTimer(setSuccessMsg('Вы вышли !'), setSuccessMsg(null)));
             },
             err => errorHandler(err, dispatch));
@@ -97,7 +106,6 @@ export const loginUser = userData => {
 export const checkEmail = emailObj => {
     return dispatch => {
         return axios.post('/users/email', emailObj).then(res => {
-                // dispatch(userSuccessHandler(res.data.user));
                 dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
             },
             err => errorHandler(err, dispatch));
@@ -107,7 +115,6 @@ export const checkEmail = emailObj => {
 export const setNewPassword = passObj => {
     return dispatch => {
         return axios.put('/users', passObj).then(res => {
-                // dispatch(userSuccessHandler(res.data.user));
                 dispatch(notificationTimer(setSuccessMsg(res.data.success), setSuccessMsg(null)));
             },
             err => errorHandler(err, dispatch));

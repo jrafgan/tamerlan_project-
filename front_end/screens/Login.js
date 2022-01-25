@@ -49,12 +49,12 @@ const Login = () => {
     return (
         <View style={styles.container}>
             <TextInput style={styles.input}
-                       placeholder="Username"
+                       placeholder="Имя пользователя"
                        value={username}
                        onChangeText={setUsername}
             />
             <TextInput style={styles.input}
-                       placeholder="Password"
+                       placeholder="Пароль"
                        value={password}
                        onChangeText={setPassword}
                        secureTextEntry

@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import WebView from "react-native-webview";
 import {avitoURL, citiesArr, youlaURL} from "../../constants";
 import {preloaderHandler, setCityToStore} from "../../store/actions/adsActions";
-
-const width = Dimensions.get('window').width;
 
 const SearchResult = () => {
     const dispatch = useDispatch();
@@ -301,7 +299,8 @@ const SearchResult = () => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 10
+        marginTop: 10,
+        paddingHorizontal: 25
     },
     titleText: {
         fontSize: 20,

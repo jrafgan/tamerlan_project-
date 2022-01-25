@@ -1,8 +1,11 @@
 import React from 'react';
 import {
-    StyleSheet, View, Text, Image, Dimensions,
+    StyleSheet, View, Text, Image, TouchableOpacity, Dimensions,
 } from 'react-native';
 import Carousel, { PaginationLight } from 'react-native-x-carousel';
+import {setAdToModify} from "../store/actions/adsActions";
+import {useNavigation} from "@react-navigation/native";
+import {useDispatch, useSelector} from "react-redux";
 
 const { width } = Dimensions.get('window');
 
@@ -10,7 +13,7 @@ const DATA = [
     {
         coverImageUri: 'https://user-images.githubusercontent.com/6414178/73920321-2357b680-4900-11ea-89d5-2e8cbecec9f6.jpg',
         cornerLabelColor: '#FFD300',
-        cornerLabelText: 'Здесь может',
+        cornerLabelText: 'Здесь может ',
     },
     {
         coverImageUri: 'https://user-images.githubusercontent.com/6414178/73920358-336f9600-4900-11ea-8eec-cc919b991e90.jpg',
@@ -27,29 +30,46 @@ const DATA = [
         cornerLabelColor: '#2ECC40',
         cornerLabelText: 'прибыльного бизнеса.',
     },
+    {
+        coverImageUri: "https://3.bp.blogspot.com/-teROVl8yqB8/V8CQvr5nF-I/AAAAAAACV7M/W59sFtnCXxkXvNPl4CqlMKAhEoieU6nMACLcB/s1600/bizarre-vintage-food-ads-32.jpeg",
+        cornerLabelColor: '#2ECC40',
+        cornerLabelText: 'Продам 1-к квартитру',
+    },
 ];
 
 const AppAdsBlock = () => {
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
+    const paid = useSelector(state => state.ads.paidAds);
+
+    const goToDetails = async ad => {
+        if (ad._id) {
+            await dispatch(setAdToModify(ad));
+            navigation.navigate('GuestAdDetails');
+        } else {
+            console.log('it is mockup ad : ', ad);
+        }
+    }
+
     const renderItem = data => (
         <View
-            key={data.coverImageUri}
+            key={data._id && data.imageUrls[0] ? data.imageUrls[0] : data.coverImageUri}
             style={styles.cardContainer}
         >
             <View
                 style={styles.cardWrapper}
             >
+                <TouchableOpacity onPress={() => goToDetails(data)}>
                 <Image
                     style={styles.card}
-                    source={{ uri: data.coverImageUri }}
+                    source={{ uri: data._id && data.imageUrls[0] ? data.imageUrls[0] : data.coverImageUri }}
                 />
+                </TouchableOpacity>
                 <View
-                    style={[
-                        styles.cornerLabel,
-                        { backgroundColor: data.cornerLabelColor },
-                    ]}
+                    style={styles.cornerLabel}
                 >
                     <Text style={styles.cornerLabelText}>
-                        { data.cornerLabelText }
+                        { data._id && data.adTitle ? data.adTitle : data.cornerLabelText }
                     </Text>
                 </View>
             </View>
@@ -61,7 +81,7 @@ const AppAdsBlock = () => {
             <Carousel
                 pagination={PaginationLight}
                 renderItem={renderItem}
-                data={DATA}
+                data={paid || DATA}
                 loop
                 autoplay
                 autoplayInterval={3000}
@@ -88,7 +108,7 @@ const styles = StyleSheet.create({
     },
     card: {
         width: width * 0.9,
-        height: width * 0.5,
+        height: width * 0.9,
     },
     cornerLabel: {
         position: 'absolute',
@@ -97,13 +117,14 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 8,
     },
     cornerLabelText: {
-        fontSize: 30,
+        fontSize: 20,
         color: '#fff',
         fontWeight: '600',
         paddingLeft: 5,
         paddingRight: 5,
         paddingTop: 2,
         paddingBottom: 2,
+        backgroundColor: "#FFD300"
     },
 });
 

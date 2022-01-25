@@ -1,21 +1,28 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, View, ScrollView, Dimensions} from 'react-native';
 import TopMenu from '../components/TopMenu';
 import Footer from '../components/Footer';
 import {StatusBar} from 'expo-status-bar';
 import ScreenBody from '../components/ScreenBody/ScreenBody';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Preloader from "../components/Preloader";
 import AppAdsBlock from "../components/AppAdsBlock";
+import {getPublishedAds, setCatIdToStore} from "../store/actions/adsActions";
 
 const height = Dimensions.get('window').height;
 
 const HomeScreen = () => {
     const show = useSelector(state => state.ads.showPreloader);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(setCatIdToStore(''))
+        dispatch(getPublishedAds())
+    }, [])
 
     return (
         <View>
-            <ScrollView keyboardShouldPersistTaps='never' contentContainerStyle={{height: '100%'}}>
+            <ScrollView>
                 <View style={styles.container}>
                     <TopMenu/>
                     <AppAdsBlock/>

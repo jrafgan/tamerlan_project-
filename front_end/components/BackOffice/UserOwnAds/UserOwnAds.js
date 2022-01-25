@@ -12,16 +12,17 @@ const UserOwnAds = () => {
     const navigation = useNavigation();
 
     const allAds = useSelector(state => state.ads.allAds);
+    const user = useSelector(state => state.users.user);
     const [ads, setAds] = useState([]);
 
     const showDetails = async ad => {
         await dispatch(setAdToModify(ad));
-        navigation.navigate('UserAdDetails');
+        navigation.navigate(user === 'admiN01' ? 'AdminAdDetails' : 'UserAdDetails');
     }
 
     return (
         <View>
-            <View><Text style={styles.headerText}>Мои объявления</Text></View>
+            <View><Text style={styles.headerText}>{user === 'admiN01' ? 'Новые объявления' : 'Мои объявления'}</Text></View>
             {allAds && allAds.length > 0 ? allAds.map((ad) => <Card key={ad._id}>
                 <Card.Title>{ad.adTitle}</Card.Title>
                 <Card.Divider/>
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     },
     image: {
         height: 350,
-        width: 350
+        width: 300
     }
 });
 

@@ -14,15 +14,10 @@ const Category = () => {
 
     const [selectedCategory, setSelectedCategory] = useState('');
 
-    useEffect(() => {
-        if (selectedCategory) {
-            dispatch(setCatIdToStore(selectedCategory));
-        }
-    }, [selectedCategory]);
-
     const setCategory = catId => {
-        dispatch(preloaderHandler(true));
+        // dispatch(preloaderHandler(true)); todo preloader
         setSelectedCategory(catId);
+        dispatch(setCatIdToStore(catId));
     }
 
     return (

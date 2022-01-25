@@ -7,7 +7,6 @@ import Messages from "./Messages/Messages";
 import UserCreateAd from "./UserCreateAd/UserCreateAd";
 import {useSelector} from "react-redux";
 import AdminMessages from "./AdminTabs/AdminMessages";
-import NewAds from "./AdminTabs/NewAds";
 import PaidAds from "./AdminTabs/PaidAds";
 
 const BackOfficeTabs = () => {
@@ -25,7 +24,6 @@ const BackOfficeTabs = () => {
             const arr = msgs.allMessages.filter(item => item.newMsg === true);
             setMsgCount(arr.length);
             setTitle3(arr.length !== 0 ? 'Новых ' + arr.length + ' Сообщения' : ' Сообщения');
-            console.log('messages for user ; ', msgs);
         }
         if (userState.user === "admiN01") {
             setAdmin(true);
@@ -79,13 +77,13 @@ const BackOfficeTabs = () => {
                 />
                 </View>
             </View>
+            {tab === 0 ? <UserOwnAds/> : null}
             {!admin ? <View style={styles.container2}>
-                    {tab === 0 ? <UserOwnAds/> : null}
                     {tab === 1 ? <UserCreateAd/> : null}
                     {tab === 2 ? <Messages/> : null}
                 </View> :
                 <View style={styles.container2}>
-                    {tab === 0 ? <NewAds/> : null}
+                    {/*{tab === 0 ? <NewAds/> : null}*/}
                     {tab === 1 ? <AdminMessages/> : null}
                     {tab === 2 ? <PaidAds/> : null}
                 </View>}

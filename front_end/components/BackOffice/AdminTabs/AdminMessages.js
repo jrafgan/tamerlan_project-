@@ -4,19 +4,6 @@ import Messages from "../Messages/Messages";
 
 const AdminMessages = () => {
 
-    useEffect(() => {//todo delete
-        // if (selectedAd) {
-        //     citiesArr.find(el => {
-        //         if (el.value === selectedAd.city) {
-        //             setCity(el.title);
-        //         }
-        //         return el.value === selectedAd.city;
-        //     });
-        // }
-        // if (selectedAd.moderated) {
-        //     setCity(selectedAd.moderated)
-        // }
-    }, []);
     return (
         <View>
             <ScrollView styles={styles.container}>
@@ -29,7 +16,7 @@ const AdminMessages = () => {
 const styles = StyleSheet.create({
     image: {
         height: 350,
-        width: 350
+        width: 300
     },
     text: {
         marginTop: 10,

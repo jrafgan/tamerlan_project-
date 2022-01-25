@@ -21,6 +21,7 @@ const usersReducer = (state = initialState, action) => {
             return {...state, user: action.data.username, userId: action.data.id || action.data._id , authorized: true, token: action.data.token};
 
         case LOGOUT_USER:
+            console.log('logout trigggered')
             return {...state, user: '', userId: '', authorized: false};
 
         case SET_SUCCESS_MESSAGE:

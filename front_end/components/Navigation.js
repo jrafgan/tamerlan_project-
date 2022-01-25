@@ -13,19 +13,20 @@ import UserAdDetails from "./BackOffice/UserAdDetails/UserAdDetails";
 import MessageDetails from "./BackOffice/Messages/MessageDetails";
 import AdminAdDetails from "./BackOffice/AdminTabs/AdminAdDetails";
 import EmailForm from "../screens/EmailForm";
+import GuestAdDetails from "./ScreenBody/GuestAdDetails";
 
 const Stack = createStackNavigator();
 
 const Navigation = () => {
     const userState = useSelector(state => state.users);
     const adsState = useSelector(state => state.ads);
-    console.log('messages : ', userState.errorMsg);
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName={'Home'} screenOptions={{
                 headerShown: false
             }}>
                 <Stack.Screen name="Home" component={HomeScreen}/>
+                <Stack.Screen name="GuestAdDetails" component={GuestAdDetails}/>
                 {userState.authorized ? <><Stack.Screen name="BackOffice" component={BackOffice}/>
                 <Stack.Screen name="UserCreateAd" component={UserCreateAd}/>
                     <Stack.Screen name="UserAdDetails" component={UserAdDetails}/>
